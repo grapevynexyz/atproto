@@ -1,5 +1,36 @@
 # @atproto/identity
 
+## 0.4.12
+
+### Patch Changes
+
+- [#4669](https://github.com/bluesky-social/atproto/pull/4669) [`dc9644b`](https://github.com/bluesky-social/atproto/commit/dc9644bbeb1892931809568895162d823e4743d2) Thanks [@matthieusieben](https://github.com/matthieusieben)! - Fix lint warning
+
+## 0.4.11
+
+### Patch Changes
+
+- [#4609](https://github.com/bluesky-social/atproto/pull/4609) [`00e6dbd`](https://github.com/bluesky-social/atproto/commit/00e6dbdcea295cfa3dff7eb7517420039cc3e821) Thanks [@matthieusieben](https://github.com/matthieusieben)! - Fix `method.resolveNoCheck is not a function` error when using speciallt forged did method
+
+- Updated dependencies []:
+  - @atproto/common-web@0.4.16
+
+## 0.4.10
+
+### Patch Changes
+
+- Updated dependencies [[`261968fd6`](https://github.com/bluesky-social/atproto/commit/261968fd65014ded613e2bf085d61a7864b8fba7), [`261968fd6`](https://github.com/bluesky-social/atproto/commit/261968fd65014ded613e2bf085d61a7864b8fba7), [`261968fd6`](https://github.com/bluesky-social/atproto/commit/261968fd65014ded613e2bf085d61a7864b8fba7)]:
+  - @atproto/common-web@0.4.4
+  - @atproto/crypto@0.4.4
+
+## 0.4.9
+
+### Patch Changes
+
+- Updated dependencies [[`055a413fb`](https://github.com/bluesky-social/atproto/commit/055a413fba4fab510ec899377154f1204ab12099)]:
+  - @atproto/common-web@0.4.3
+  - @atproto/crypto@0.4.4
+
 ## 0.4.8
 
 ### Patch Changes

@@ -21,6 +21,7 @@ export default (db: Database): Partial<ServiceImpl<typeof Service>> => ({
       replies: uris.map((uri) => byUri.get(uri)?.replyCount ?? 0),
       reposts: uris.map((uri) => byUri.get(uri)?.repostCount ?? 0),
       quotes: uris.map((uri) => byUri.get(uri)?.quoteCount ?? 0),
+      bookmarks: uris.map((uri) => byUri.get(uri)?.bookmarkCount ?? 0),
     }
   },
   async getCountsForUsers(req) {
@@ -48,6 +49,11 @@ export default (db: Database): Partial<ServiceImpl<typeof Service>> => ({
           .whereRef('creator', '=', ref('profile_agg.did'))
           .select(countAll.as('val'))
           .as('starterPacksCount'),
+        db.db
+          .selectFrom('draft')
+          .whereRef('creator', '=', ref('profile_agg.did'))
+          .select(countAll.as('val'))
+          .as('draftsCount'),
       ])
       .execute()
     const byDid = keyBy(res, 'did')
@@ -60,6 +66,7 @@ export default (db: Database): Partial<ServiceImpl<typeof Service>> => ({
       starterPacks: req.dids.map(
         (uri) => byDid.get(uri)?.starterPacksCount ?? 0,
       ),
+      drafts: req.dids.map((uri) => byDid.get(uri)?.draftsCount ?? 0),
     }
   },
   async getStarterPackCounts(req) {

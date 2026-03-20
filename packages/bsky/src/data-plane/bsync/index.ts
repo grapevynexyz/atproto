@@ -8,6 +8,8 @@ import { TID } from '@atproto/common'
 import { jsonStringToLex } from '@atproto/lexicon'
 import { AtUri } from '@atproto/syntax'
 import { ids } from '../../lexicon/lexicons'
+import { Event as AgeAssuranceV2Event } from '../../lexicon/types/app/bsky/ageassurance/defs'
+import { Bookmark } from '../../lexicon/types/app/bsky/bookmark/defs'
 import { SubjectActivitySubscription } from '../../lexicon/types/app/bsky/notification/defs'
 import { AgeAssuranceEvent } from '../../lexicon/types/app/bsky/unspecced/defs'
 import { httpLogger } from '../../logger'
@@ -19,7 +21,7 @@ import {
 } from '../../proto/bsync_pb'
 import { Namespaces } from '../../stash'
 import { Database } from '../server/db'
-import { excluded } from '../server/db/util'
+import { countAll, excluded } from '../server/db/util'
 
 export class MockBsync {
   constructor(public server: http.Server) {}
@@ -164,27 +166,25 @@ const createRoutes = (db: Database) => (router: ConnectRouter) =>
       await handleGenericOperation(db, req, now)
 
       // Maintain bespoke indexes for certain namespaces.
-      if (
-        namespace ===
-        Namespaces.AppBskyNotificationDefsSubjectActivitySubscription
-      ) {
-        await handleSubjectActivitySubscriptionOperation(db, req, now).catch(
-          (err: unknown) =>
-            httpLogger.warn(
-              { err, namespace },
-              'mock bsync put operation failed',
-            ),
-        )
-      } else if (
-        namespace === Namespaces.AppBskyUnspeccedDefsAgeAssuranceEvent
-      ) {
-        await handleAgeAssuranceEventOperation(db, req, now).catch(
-          (err: unknown) =>
-            httpLogger.warn(
-              { err, namespace },
-              'mock bsync put operation failed',
-            ),
-        )
+      try {
+        if (
+          namespace ===
+          Namespaces.AppBskyNotificationDefsSubjectActivitySubscription
+        ) {
+          await handleSubjectActivitySubscriptionOperation(db, req, now)
+        } else if (
+          namespace === Namespaces.AppBskyUnspeccedDefsAgeAssuranceEvent
+        ) {
+          await handleAgeAssuranceEventOperation(db, req, now)
+        } else if (namespace === Namespaces.AppBskyAgeassuranceDefsEvent) {
+          await handleAgeAssuranceV2EventOperation(db, req, now)
+        } else if (namespace === Namespaces.AppBskyBookmarkDefsBookmark) {
+          await handleBookmarkOperation(db, req, now)
+        } else if (namespace === Namespaces.AppBskyDraftDefsDraftWithId) {
+          await handleDraftOperation(db, req, now)
+        }
+      } catch (err) {
+        httpLogger.warn({ err, namespace }, 'mock bsync put operation failed')
       }
 
       return {
@@ -317,4 +317,148 @@ const handleAgeAssuranceEventOperation = async (
     .set(update)
     .where('did', '=', actorDid)
     .execute()
+}
+
+const handleAgeAssuranceV2EventOperation = async (
+  db: Database,
+  req: PutOperationRequest,
+  _now: string,
+) => {
+  const { actorDid, method, payload } = req
+  if (method !== Method.CREATE) return
+
+  const parsed = jsonStringToLex(
+    Buffer.from(payload).toString('utf8'),
+  ) as AgeAssuranceV2Event
+  const { status, createdAt, access, countryCode, regionCode } = parsed
+
+  const update = {
+    ageAssuranceStatus: status,
+    ageAssuranceLastInitiatedAt: status === 'pending' ? createdAt : undefined,
+    ageAssuranceAccess: access,
+    ageAssuranceCountryCode: countryCode,
+    ageAssuranceRegionCode: regionCode,
+  }
+
+  return db.db
+    .updateTable('actor')
+    .set(update)
+    .where('did', '=', actorDid)
+    .execute()
+}
+
+const handleBookmarkOperation = async (
+  db: Database,
+  req: PutOperationRequest,
+  now: string,
+) => {
+  const { actorDid, key, method, payload } = req
+
+  const updateAgg = (uri: string, dbTxn: Database) => {
+    return dbTxn.db
+      .insertInto('post_agg')
+      .values({
+        uri,
+        bookmarkCount: dbTxn.db
+          .selectFrom('bookmark')
+          .where('bookmark.subjectUri', '=', uri)
+          .select(countAll.as('count')),
+      })
+      .onConflict((oc) =>
+        oc
+          .column('uri')
+          .doUpdateSet({ bookmarkCount: excluded(dbTxn.db, 'bookmarkCount') }),
+      )
+      .execute()
+  }
+
+  if (method === Method.CREATE) {
+    const parsed = jsonStringToLex(
+      Buffer.from(payload).toString('utf8'),
+    ) as Bookmark
+    const {
+      subject: { uri, cid },
+    } = parsed
+
+    await db.transaction(async (dbTxn) => {
+      await dbTxn.db
+        .insertInto('bookmark')
+        .values({
+          creator: actorDid,
+          key,
+          indexedAt: now,
+          subjectUri: uri,
+          subjectCid: cid,
+        })
+        .execute()
+
+      await updateAgg(uri, dbTxn)
+    })
+  }
+
+  if (method === Method.DELETE) {
+    await db.transaction(async (dbTxn) => {
+      const bookmark = await dbTxn.db
+        .selectFrom('bookmark')
+        .selectAll()
+        .where('creator', '=', actorDid)
+        .where('key', '=', key)
+        .executeTakeFirst()
+
+      if (bookmark) {
+        await dbTxn.db
+          .deleteFrom('bookmark')
+          .where('creator', '=', actorDid)
+          .where('key', '=', key)
+          .execute()
+
+        await updateAgg(bookmark.subjectUri, dbTxn)
+      }
+    })
+  }
+}
+
+const handleDraftOperation = async (
+  db: Database,
+  req: PutOperationRequest,
+  now: string,
+) => {
+  const { actorDid, key, method, payload } = req
+
+  if (method === Method.CREATE) {
+    const payloadString = Buffer.from(payload).toString('utf8')
+
+    await db.db
+      .insertInto('draft')
+      .values({
+        creator: actorDid,
+        key,
+        createdAt: now,
+        updatedAt: now,
+        payload: payloadString,
+      })
+      .execute()
+  }
+
+  if (method === Method.UPDATE) {
+    const payloadString = Buffer.from(payload).toString('utf8')
+
+    await db.db
+      .updateTable('draft')
+      .where('creator', '=', actorDid)
+      .where('key', '=', key)
+      .set({
+        updatedAt: now,
+        payload: payloadString,
+      })
+      .execute()
+  }
+
+  if (method === Method.DELETE) {
+    await db.db
+      .deleteFrom('draft')
+      .where('creator', '=', actorDid)
+      .where('key', '=', key)
+      .execute()
+  }
 }

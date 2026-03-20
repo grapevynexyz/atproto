@@ -5,11 +5,13 @@ import { Record as ProfileRecord } from '../lexicon/types/app/bsky/actor/profile
 import { Record as StatusRecord } from '../lexicon/types/app/bsky/actor/status'
 import { Record as NotificationDeclarationRecord } from '../lexicon/types/app/bsky/notification/declaration'
 import { Record as ChatDeclarationRecord } from '../lexicon/types/chat/bsky/actor/declaration'
+import { Record as GermDeclarationRecord } from '../lexicon/types/com/germnetwork/declaration'
 import { ActivitySubscription, VerificationMeta } from '../proto/bsky_pb'
 import {
   HydrationMap,
   RecordInfo,
   isActivitySubscriptionEnabled,
+  parseDate,
   parseRecord,
   parseString,
   safeTakedownRef,
@@ -37,7 +39,17 @@ export type Actor = {
   trustedVerifier?: boolean
   verifications: VerificationHydrationState[]
   status?: RecordInfo<StatusRecord>
+  germ?: RecordInfo<GermDeclarationRecord>
   allowActivitySubscriptionsFrom: AllowActivitySubscriptions
+  /**
+   * Debug information for internal development
+   */
+  debug?: {
+    pagerank?: string
+    accountTags?: string[]
+    profileTags?: string[]
+    [key: string]: unknown
+  }
 }
 
 export type VerificationHydrationState = {
@@ -53,10 +65,12 @@ export type VerificationMetaRequired = Required<VerificationMeta>
 export type Actors = HydrationMap<Actor>
 
 export type ChatDeclaration = RecordInfo<ChatDeclarationRecord>
-
 export type ChatDeclarations = HydrationMap<ChatDeclaration>
-export type NotificationDeclaration = RecordInfo<NotificationDeclarationRecord>
 
+export type GermDeclaration = RecordInfo<GermDeclarationRecord>
+export type GermDeclarations = HydrationMap<GermDeclaration>
+
+export type NotificationDeclaration = RecordInfo<NotificationDeclarationRecord>
 export type NotificationDeclarations = HydrationMap<NotificationDeclaration>
 
 export type Status = RecordInfo<StatusRecord>
@@ -170,12 +184,23 @@ export class ActorHydrator {
         return acc.set(did, null)
       }
 
-      const profile = actor.profile
+      const profile = actor.profile?.record
         ? parseRecord<ProfileRecord>(actor.profile, includeTakedowns)
         : undefined
 
       const status = actor.statusRecord
-        ? parseRecord<StatusRecord>(actor.statusRecord, includeTakedowns)
+        ? parseRecord<StatusRecord>(
+            actor.statusRecord,
+            /*
+             * Always true, we filter this out in the `Views.status()`. If we
+             * ever remove that filter, we'll want to reinstate this here.
+             */
+            true,
+          )
+        : undefined
+
+      const germ = actor.germRecord
+        ? parseRecord<GermDeclarationRecord>(actor.germRecord, includeTakedowns)
         : undefined
 
       const verifications = mapDefined(
@@ -191,7 +216,9 @@ export class ActorHydrator {
               uri: `at://${actorDid}/app.bsky.graph.verification/${verificationMeta.rkey}`,
               handle: verificationMeta.handle,
               displayName: verificationMeta.displayName,
-              createdAt: verificationMeta.sortedAt.toDate().toISOString(),
+              createdAt:
+                parseDate(verificationMeta.sortedAt)?.toISOString() ??
+                new Date(0).toISOString(),
             }
           }
           // Filter out the verification meta that doesn't contain all info.
@@ -213,6 +240,12 @@ export class ActorHydrator {
         }
       }
 
+      const debug = {
+        pagerank: actor.pagerank ? actor.pagerank.toString() : undefined,
+        accountTags: actor.tags,
+        profileTags: actor.profileTags,
+      }
+
       return acc.set(did, {
         did,
         handle: parseString(actor.handle),
@@ -225,14 +258,16 @@ export class ActorHydrator {
         isLabeler: actor.labeler ?? false,
         allowIncomingChatsFrom: actor.allowIncomingChatsFrom || undefined,
         upstreamStatus: actor.upstreamStatus || undefined,
-        createdAt: actor.createdAt?.toDate(),
+        createdAt: parseDate(actor.createdAt),
         priorityNotifications: actor.priorityNotifications,
         trustedVerifier: actor.trustedVerifier,
         verifications,
         status: status,
+        germ: germ,
         allowActivitySubscriptionsFrom: allowActivitySubscriptionsFrom(
           actor.allowActivitySubscriptionsFrom,
         ),
+        debug,
       })
     }, new HydrationMap<Actor>())
   }
@@ -252,12 +287,27 @@ export class ActorHydrator {
     }, new HydrationMap<ChatDeclaration>())
   }
 
+  async getGermDeclarations(
+    uris: string[],
+    includeTakedowns = false,
+  ): Promise<GermDeclarations> {
+    if (!uris.length) return new HydrationMap<GermDeclaration>()
+    const res = await this.dataplane.getGermDeclarationRecords({ uris })
+    return uris.reduce((acc, uri, i) => {
+      const record = parseRecord<GermDeclarationRecord>(
+        res.records[i],
+        includeTakedowns,
+      )
+      return acc.set(uri, record ?? null)
+    }, new HydrationMap<GermDeclaration>())
+  }
+
   async getNotificationDeclarations(
     uris: string[],
     includeTakedowns = false,
   ): Promise<NotificationDeclarations> {
     if (!uris.length) return new HydrationMap<NotificationDeclaration>()
-    const res = await this.dataplane.getActorChatDeclarationRecords({ uris })
+    const res = await this.dataplane.getNotificationDeclarationRecords({ uris })
     return uris.reduce((acc, uri, i) => {
       const record = parseRecord<NotificationDeclarationRecord>(
         res.records[i],

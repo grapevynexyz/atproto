@@ -1218,7 +1218,6 @@ describe('crud operations', () => {
       await expect(result).rejects.toMatchObject({
         status: 400,
         error: 'InvalidRequest',
-        message: 'Bad record',
       })
     })
   })

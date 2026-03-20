@@ -1,6 +1,7 @@
 import { z } from 'zod'
 import { oauthCodeChallengeMethodSchema } from './oauth-code-challenge-method.js'
 import { oauthIssuerIdentifierSchema } from './oauth-issuer-identifier.js'
+import { oauthPromptModeSchema } from './oauth-prompt-mode.js'
 import { webUriSchema } from './uri.js'
 
 /**
@@ -67,11 +68,14 @@ export const oauthAuthorizationServerMetadataSchema = z.object({
   // https://datatracker.ietf.org/doc/html/rfc9449#section-5.1
   dpop_signing_alg_values_supported: z.array(z.string()).optional(),
 
-  // https://datatracker.ietf.org/doc/html/draft-ietf-oauth-resource-metadata-05#section-4
+  // https://www.rfc-editor.org/rfc/rfc9728.html#section-4
   protected_resources: z.array(webUriSchema).optional(),
 
-  // https://drafts.aaronpk.com/draft-parecki-oauth-client-id-metadata-document/draft-parecki-oauth-client-id-metadata-document.html
+  // https://www.ietf.org/archive/id/draft-ietf-oauth-client-id-metadata-document-00.html
   client_id_metadata_document_supported: z.boolean().optional(),
+
+  // https://openid.net/specs/openid-connect-prompt-create-1_0.html#section-4.2
+  prompt_values_supported: z.array(oauthPromptModeSchema).optional(),
 })
 
 export type OAuthAuthorizationServerMetadata = z.infer<

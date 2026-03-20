@@ -31,6 +31,9 @@ export const schemaDict = {
             maxGraphemes: 64,
             maxLength: 640,
           },
+          pronouns: {
+            type: 'string',
+          },
           avatar: {
             type: 'string',
             format: 'uri',
@@ -62,6 +65,10 @@ export const schemaDict = {
             type: 'ref',
             ref: 'lex:app.bsky.actor.defs#statusView',
           },
+          debug: {
+            type: 'unknown',
+            description: 'Debug information for internal development',
+          },
         },
       },
       profileView: {
@@ -80,6 +87,9 @@ export const schemaDict = {
             type: 'string',
             maxGraphemes: 64,
             maxLength: 640,
+          },
+          pronouns: {
+            type: 'string',
           },
           description: {
             type: 'string',
@@ -121,6 +131,10 @@ export const schemaDict = {
             type: 'ref',
             ref: 'lex:app.bsky.actor.defs#statusView',
           },
+          debug: {
+            type: 'unknown',
+            description: 'Debug information for internal development',
+          },
         },
       },
       profileViewDetailed: {
@@ -144,6 +158,13 @@ export const schemaDict = {
             type: 'string',
             maxGraphemes: 256,
             maxLength: 2560,
+          },
+          pronouns: {
+            type: 'string',
+          },
+          website: {
+            type: 'string',
+            format: 'uri',
           },
           avatar: {
             type: 'string',
@@ -201,6 +222,10 @@ export const schemaDict = {
             type: 'ref',
             ref: 'lex:app.bsky.actor.defs#statusView',
           },
+          debug: {
+            type: 'unknown',
+            description: 'Debug information for internal development',
+          },
         },
       },
       profileAssociated: {
@@ -226,6 +251,10 @@ export const schemaDict = {
             type: 'ref',
             ref: 'lex:app.bsky.actor.defs#profileAssociatedActivitySubscription',
           },
+          germ: {
+            type: 'ref',
+            ref: 'lex:app.bsky.actor.defs#profileAssociatedGerm',
+          },
         },
       },
       profileAssociatedChat: {
@@ -235,6 +264,20 @@ export const schemaDict = {
           allowIncoming: {
             type: 'string',
             knownValues: ['all', 'none', 'following'],
+          },
+        },
+      },
+      profileAssociatedGerm: {
+        type: 'object',
+        required: ['showButtonTo', 'messageMeUrl'],
+        properties: {
+          messageMeUrl: {
+            type: 'string',
+            format: 'uri',
+          },
+          showButtonTo: {
+            type: 'string',
+            knownValues: ['usersIFollow', 'everyone'],
           },
         },
       },
@@ -376,6 +419,7 @@ export const schemaDict = {
             'lex:app.bsky.actor.defs#savedFeedsPref',
             'lex:app.bsky.actor.defs#savedFeedsPrefV2',
             'lex:app.bsky.actor.defs#personalDetailsPref',
+            'lex:app.bsky.actor.defs#declaredAgePref',
             'lex:app.bsky.actor.defs#feedViewPref',
             'lex:app.bsky.actor.defs#threadViewPref',
             'lex:app.bsky.actor.defs#interestsPref',
@@ -385,6 +429,7 @@ export const schemaDict = {
             'lex:app.bsky.actor.defs#labelersPref',
             'lex:app.bsky.actor.defs#postInteractionSettingsPref',
             'lex:app.bsky.actor.defs#verificationPrefs',
+            'lex:app.bsky.actor.defs#liveEventPreferences',
           ],
         },
       },
@@ -482,6 +527,28 @@ export const schemaDict = {
           },
         },
       },
+      declaredAgePref: {
+        type: 'object',
+        description:
+          "Read-only preference containing value(s) inferred from the user's declared birthdate. Absence of this preference object in the response indicates that the user has not made a declaration.",
+        properties: {
+          isOverAge13: {
+            type: 'boolean',
+            description:
+              'Indicates if the user has declared that they are over 13 years of age.',
+          },
+          isOverAge16: {
+            type: 'boolean',
+            description:
+              'Indicates if the user has declared that they are over 16 years of age.',
+          },
+          isOverAge18: {
+            type: 'boolean',
+            description:
+              'Indicates if the user has declared that they are over 18 years of age.',
+          },
+        },
+      },
       feedViewPref: {
         type: 'object',
         required: ['feed'],
@@ -529,10 +596,6 @@ export const schemaDict = {
               'random',
               'hotness',
             ],
-          },
-          prioritizeFollowedUsers: {
-            type: 'boolean',
-            description: 'Show followed users at the top of all replies.',
           },
         },
       },
@@ -731,6 +794,25 @@ export const schemaDict = {
           },
         },
       },
+      liveEventPreferences: {
+        type: 'object',
+        description: 'Preferences for live events.',
+        properties: {
+          hiddenFeedIds: {
+            description:
+              'A list of feed IDs that the user has hidden from live events.',
+            type: 'array',
+            items: {
+              type: 'string',
+            },
+          },
+          hideAllFeeds: {
+            description: 'Whether to hide all feeds from live events.',
+            type: 'boolean',
+            default: false,
+          },
+        },
+      },
       postInteractionSettingsPref: {
         type: 'object',
         description:
@@ -768,6 +850,14 @@ export const schemaDict = {
         type: 'object',
         required: ['status', 'record'],
         properties: {
+          uri: {
+            type: 'string',
+            format: 'at-uri',
+          },
+          cid: {
+            type: 'string',
+            format: 'cid',
+          },
           status: {
             type: 'string',
             description: 'The status for the account.',
@@ -791,6 +881,11 @@ export const schemaDict = {
             type: 'boolean',
             description:
               'True if the status is not expired, false if it is expired. Only present if expiration was set.',
+          },
+          isDisabled: {
+            type: 'boolean',
+            description:
+              "True if the user's go-live access has been disabled by a moderator, false otherwise.",
           },
         },
       },
@@ -933,6 +1028,10 @@ export const schemaDict = {
               },
               recId: {
                 type: 'integer',
+                description: 'DEPRECATED: use recIdStr instead.',
+              },
+              recIdStr: {
+                type: 'string',
                 description:
                   'Snowflake for this recommendation, use when submitting recommendation events.',
               },
@@ -963,6 +1062,16 @@ export const schemaDict = {
               description: 'Free-form profile description text.',
               maxGraphemes: 256,
               maxLength: 2560,
+            },
+            pronouns: {
+              type: 'string',
+              description: 'Free-form pronouns text.',
+              maxGraphemes: 20,
+              maxLength: 200,
+            },
+            website: {
+              type: 'string',
+              format: 'uri',
             },
             avatar: {
               type: 'blob',
@@ -1162,6 +1271,1374 @@ export const schemaDict = {
         type: 'token',
         description:
           'Advertises an account as currently offering live content.',
+      },
+    },
+  },
+  AppBskyAgeassuranceBegin: {
+    lexicon: 1,
+    id: 'app.bsky.ageassurance.begin',
+    defs: {
+      main: {
+        type: 'procedure',
+        description: 'Initiate Age Assurance for an account.',
+        input: {
+          encoding: 'application/json',
+          schema: {
+            type: 'object',
+            required: ['email', 'language', 'countryCode'],
+            properties: {
+              email: {
+                type: 'string',
+                description:
+                  "The user's email address to receive Age Assurance instructions.",
+              },
+              language: {
+                type: 'string',
+                description:
+                  "The user's preferred language for communication during the Age Assurance process.",
+              },
+              countryCode: {
+                type: 'string',
+                description:
+                  "An ISO 3166-1 alpha-2 code of the user's location.",
+              },
+              regionCode: {
+                type: 'string',
+                description:
+                  "An optional ISO 3166-2 code of the user's region or state within the country.",
+              },
+            },
+          },
+        },
+        output: {
+          encoding: 'application/json',
+          schema: {
+            type: 'ref',
+            ref: 'lex:app.bsky.ageassurance.defs#state',
+          },
+        },
+        errors: [
+          {
+            name: 'InvalidEmail',
+          },
+          {
+            name: 'DidTooLong',
+          },
+          {
+            name: 'InvalidInitiation',
+          },
+          {
+            name: 'RegionNotSupported',
+          },
+        ],
+      },
+    },
+  },
+  AppBskyAgeassuranceDefs: {
+    lexicon: 1,
+    id: 'app.bsky.ageassurance.defs',
+    defs: {
+      access: {
+        description:
+          "The access level granted based on Age Assurance data we've processed.",
+        type: 'string',
+        knownValues: ['unknown', 'none', 'safe', 'full'],
+      },
+      status: {
+        type: 'string',
+        description: 'The status of the Age Assurance process.',
+        knownValues: ['unknown', 'pending', 'assured', 'blocked'],
+      },
+      state: {
+        type: 'object',
+        description: "The user's computed Age Assurance state.",
+        required: ['status', 'access'],
+        properties: {
+          lastInitiatedAt: {
+            type: 'string',
+            format: 'datetime',
+            description: 'The timestamp when this state was last updated.',
+          },
+          status: {
+            type: 'ref',
+            ref: 'lex:app.bsky.ageassurance.defs#status',
+          },
+          access: {
+            type: 'ref',
+            ref: 'lex:app.bsky.ageassurance.defs#access',
+          },
+        },
+      },
+      stateMetadata: {
+        type: 'object',
+        description:
+          'Additional metadata needed to compute Age Assurance state client-side.',
+        required: [],
+        properties: {
+          accountCreatedAt: {
+            type: 'string',
+            format: 'datetime',
+            description: 'The account creation timestamp.',
+          },
+        },
+      },
+      config: {
+        type: 'object',
+        description: '',
+        required: ['regions'],
+        properties: {
+          regions: {
+            type: 'array',
+            description: 'The per-region Age Assurance configuration.',
+            items: {
+              type: 'ref',
+              ref: 'lex:app.bsky.ageassurance.defs#configRegion',
+            },
+          },
+        },
+      },
+      configRegion: {
+        type: 'object',
+        description: 'The Age Assurance configuration for a specific region.',
+        required: ['countryCode', 'minAccessAge', 'rules'],
+        properties: {
+          countryCode: {
+            type: 'string',
+            description:
+              'The ISO 3166-1 alpha-2 country code this configuration applies to.',
+          },
+          regionCode: {
+            type: 'string',
+            description:
+              'The ISO 3166-2 region code this configuration applies to. If omitted, the configuration applies to the entire country.',
+          },
+          minAccessAge: {
+            type: 'integer',
+            description:
+              'The minimum age (as a whole integer) required to use Bluesky in this region.',
+          },
+          rules: {
+            type: 'array',
+            description:
+              'The ordered list of Age Assurance rules that apply to this region. Rules should be applied in order, and the first matching rule determines the access level granted. The rules array should always include a default rule as the last item.',
+            items: {
+              type: 'union',
+              refs: [
+                'lex:app.bsky.ageassurance.defs#configRegionRuleDefault',
+                'lex:app.bsky.ageassurance.defs#configRegionRuleIfDeclaredOverAge',
+                'lex:app.bsky.ageassurance.defs#configRegionRuleIfDeclaredUnderAge',
+                'lex:app.bsky.ageassurance.defs#configRegionRuleIfAssuredOverAge',
+                'lex:app.bsky.ageassurance.defs#configRegionRuleIfAssuredUnderAge',
+                'lex:app.bsky.ageassurance.defs#configRegionRuleIfAccountNewerThan',
+                'lex:app.bsky.ageassurance.defs#configRegionRuleIfAccountOlderThan',
+              ],
+            },
+          },
+        },
+      },
+      configRegionRuleDefault: {
+        type: 'object',
+        description: 'Age Assurance rule that applies by default.',
+        required: ['access'],
+        properties: {
+          access: {
+            type: 'ref',
+            ref: 'lex:app.bsky.ageassurance.defs#access',
+          },
+        },
+      },
+      configRegionRuleIfDeclaredOverAge: {
+        type: 'object',
+        description:
+          'Age Assurance rule that applies if the user has declared themselves equal-to or over a certain age.',
+        required: ['age', 'access'],
+        properties: {
+          age: {
+            type: 'integer',
+            description: 'The age threshold as a whole integer.',
+          },
+          access: {
+            type: 'ref',
+            ref: 'lex:app.bsky.ageassurance.defs#access',
+          },
+        },
+      },
+      configRegionRuleIfDeclaredUnderAge: {
+        type: 'object',
+        description:
+          'Age Assurance rule that applies if the user has declared themselves under a certain age.',
+        required: ['age', 'access'],
+        properties: {
+          age: {
+            type: 'integer',
+            description: 'The age threshold as a whole integer.',
+          },
+          access: {
+            type: 'ref',
+            ref: 'lex:app.bsky.ageassurance.defs#access',
+          },
+        },
+      },
+      configRegionRuleIfAssuredOverAge: {
+        type: 'object',
+        description:
+          'Age Assurance rule that applies if the user has been assured to be equal-to or over a certain age.',
+        required: ['age', 'access'],
+        properties: {
+          age: {
+            type: 'integer',
+            description: 'The age threshold as a whole integer.',
+          },
+          access: {
+            type: 'ref',
+            ref: 'lex:app.bsky.ageassurance.defs#access',
+          },
+        },
+      },
+      configRegionRuleIfAssuredUnderAge: {
+        type: 'object',
+        description:
+          'Age Assurance rule that applies if the user has been assured to be under a certain age.',
+        required: ['age', 'access'],
+        properties: {
+          age: {
+            type: 'integer',
+            description: 'The age threshold as a whole integer.',
+          },
+          access: {
+            type: 'ref',
+            ref: 'lex:app.bsky.ageassurance.defs#access',
+          },
+        },
+      },
+      configRegionRuleIfAccountNewerThan: {
+        type: 'object',
+        description:
+          'Age Assurance rule that applies if the account is equal-to or newer than a certain date.',
+        required: ['date', 'access'],
+        properties: {
+          date: {
+            type: 'string',
+            format: 'datetime',
+            description: 'The date threshold as a datetime string.',
+          },
+          access: {
+            type: 'ref',
+            ref: 'lex:app.bsky.ageassurance.defs#access',
+          },
+        },
+      },
+      configRegionRuleIfAccountOlderThan: {
+        type: 'object',
+        description:
+          'Age Assurance rule that applies if the account is older than a certain date.',
+        required: ['date', 'access'],
+        properties: {
+          date: {
+            type: 'string',
+            format: 'datetime',
+            description: 'The date threshold as a datetime string.',
+          },
+          access: {
+            type: 'ref',
+            ref: 'lex:app.bsky.ageassurance.defs#access',
+          },
+        },
+      },
+      event: {
+        type: 'object',
+        description: 'Object used to store Age Assurance data in stash.',
+        required: ['createdAt', 'status', 'access', 'attemptId', 'countryCode'],
+        properties: {
+          createdAt: {
+            type: 'string',
+            format: 'datetime',
+            description: 'The date and time of this write operation.',
+          },
+          attemptId: {
+            type: 'string',
+            description:
+              'The unique identifier for this instance of the Age Assurance flow, in UUID format.',
+          },
+          status: {
+            type: 'string',
+            description: 'The status of the Age Assurance process.',
+            knownValues: ['unknown', 'pending', 'assured', 'blocked'],
+          },
+          access: {
+            description:
+              "The access level granted based on Age Assurance data we've processed.",
+            type: 'string',
+            knownValues: ['unknown', 'none', 'safe', 'full'],
+          },
+          countryCode: {
+            type: 'string',
+            description:
+              'The ISO 3166-1 alpha-2 country code provided when beginning the Age Assurance flow.',
+          },
+          regionCode: {
+            type: 'string',
+            description:
+              'The ISO 3166-2 region code provided when beginning the Age Assurance flow.',
+          },
+          email: {
+            type: 'string',
+            description: 'The email used for Age Assurance.',
+          },
+          initIp: {
+            type: 'string',
+            description:
+              'The IP address used when initiating the Age Assurance flow.',
+          },
+          initUa: {
+            type: 'string',
+            description:
+              'The user agent used when initiating the Age Assurance flow.',
+          },
+          completeIp: {
+            type: 'string',
+            description:
+              'The IP address used when completing the Age Assurance flow.',
+          },
+          completeUa: {
+            type: 'string',
+            description:
+              'The user agent used when completing the Age Assurance flow.',
+          },
+        },
+      },
+    },
+  },
+  AppBskyAgeassuranceGetConfig: {
+    lexicon: 1,
+    id: 'app.bsky.ageassurance.getConfig',
+    defs: {
+      main: {
+        type: 'query',
+        description:
+          'Returns Age Assurance configuration for use on the client.',
+        output: {
+          encoding: 'application/json',
+          schema: {
+            type: 'ref',
+            ref: 'lex:app.bsky.ageassurance.defs#config',
+          },
+        },
+      },
+    },
+  },
+  AppBskyAgeassuranceGetState: {
+    lexicon: 1,
+    id: 'app.bsky.ageassurance.getState',
+    defs: {
+      main: {
+        type: 'query',
+        description:
+          'Returns server-computed Age Assurance state, if available, and any additional metadata needed to compute Age Assurance state client-side.',
+        parameters: {
+          type: 'params',
+          required: ['countryCode'],
+          properties: {
+            countryCode: {
+              type: 'string',
+            },
+            regionCode: {
+              type: 'string',
+            },
+          },
+        },
+        output: {
+          encoding: 'application/json',
+          schema: {
+            type: 'object',
+            required: ['state', 'metadata'],
+            properties: {
+              state: {
+                type: 'ref',
+                ref: 'lex:app.bsky.ageassurance.defs#state',
+              },
+              metadata: {
+                type: 'ref',
+                ref: 'lex:app.bsky.ageassurance.defs#stateMetadata',
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+  AppBskyBookmarkCreateBookmark: {
+    lexicon: 1,
+    id: 'app.bsky.bookmark.createBookmark',
+    defs: {
+      main: {
+        type: 'procedure',
+        description:
+          'Creates a private bookmark for the specified record. Currently, only `app.bsky.feed.post` records are supported. Requires authentication.',
+        input: {
+          encoding: 'application/json',
+          schema: {
+            type: 'object',
+            required: ['uri', 'cid'],
+            properties: {
+              uri: {
+                type: 'string',
+                format: 'at-uri',
+              },
+              cid: {
+                type: 'string',
+                format: 'cid',
+              },
+            },
+          },
+        },
+        errors: [
+          {
+            name: 'UnsupportedCollection',
+            description:
+              'The URI to be bookmarked is for an unsupported collection.',
+          },
+        ],
+      },
+    },
+  },
+  AppBskyBookmarkDefs: {
+    lexicon: 1,
+    id: 'app.bsky.bookmark.defs',
+    defs: {
+      bookmark: {
+        description: 'Object used to store bookmark data in stash.',
+        type: 'object',
+        required: ['subject'],
+        properties: {
+          subject: {
+            description:
+              'A strong ref to the record to be bookmarked. Currently, only `app.bsky.feed.post` records are supported.',
+            type: 'ref',
+            ref: 'lex:com.atproto.repo.strongRef',
+          },
+        },
+      },
+      bookmarkView: {
+        type: 'object',
+        required: ['subject', 'item'],
+        properties: {
+          subject: {
+            description: 'A strong ref to the bookmarked record.',
+            type: 'ref',
+            ref: 'lex:com.atproto.repo.strongRef',
+          },
+          createdAt: {
+            type: 'string',
+            format: 'datetime',
+          },
+          item: {
+            type: 'union',
+            refs: [
+              'lex:app.bsky.feed.defs#blockedPost',
+              'lex:app.bsky.feed.defs#notFoundPost',
+              'lex:app.bsky.feed.defs#postView',
+            ],
+          },
+        },
+      },
+    },
+  },
+  AppBskyBookmarkDeleteBookmark: {
+    lexicon: 1,
+    id: 'app.bsky.bookmark.deleteBookmark',
+    defs: {
+      main: {
+        type: 'procedure',
+        description:
+          'Deletes a private bookmark for the specified record. Currently, only `app.bsky.feed.post` records are supported. Requires authentication.',
+        input: {
+          encoding: 'application/json',
+          schema: {
+            type: 'object',
+            required: ['uri'],
+            properties: {
+              uri: {
+                type: 'string',
+                format: 'at-uri',
+              },
+            },
+          },
+        },
+        errors: [
+          {
+            name: 'UnsupportedCollection',
+            description:
+              'The URI to be bookmarked is for an unsupported collection.',
+          },
+        ],
+      },
+    },
+  },
+  AppBskyBookmarkGetBookmarks: {
+    lexicon: 1,
+    id: 'app.bsky.bookmark.getBookmarks',
+    defs: {
+      main: {
+        type: 'query',
+        description:
+          'Gets views of records bookmarked by the authenticated user. Requires authentication.',
+        parameters: {
+          type: 'params',
+          properties: {
+            limit: {
+              type: 'integer',
+              minimum: 1,
+              maximum: 100,
+              default: 50,
+            },
+            cursor: {
+              type: 'string',
+            },
+          },
+        },
+        output: {
+          encoding: 'application/json',
+          schema: {
+            type: 'object',
+            required: ['bookmarks'],
+            properties: {
+              cursor: {
+                type: 'string',
+              },
+              bookmarks: {
+                type: 'array',
+                items: {
+                  type: 'ref',
+                  ref: 'lex:app.bsky.bookmark.defs#bookmarkView',
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+  AppBskyContactDefs: {
+    lexicon: 1,
+    id: 'app.bsky.contact.defs',
+    defs: {
+      matchAndContactIndex: {
+        description:
+          'Associates a profile with the positional index of the contact import input in the call to `app.bsky.contact.importContacts`, so clients can know which phone caused a particular match.',
+        type: 'object',
+        required: ['match', 'contactIndex'],
+        properties: {
+          match: {
+            description: 'Profile of the matched user.',
+            type: 'ref',
+            ref: 'lex:app.bsky.actor.defs#profileView',
+          },
+          contactIndex: {
+            description: 'The index of this match in the import contact input.',
+            type: 'integer',
+            minimum: 0,
+            maximum: 999,
+          },
+        },
+      },
+      syncStatus: {
+        type: 'object',
+        required: ['syncedAt', 'matchesCount'],
+        properties: {
+          syncedAt: {
+            description: 'Last date when contacts where imported.',
+            type: 'string',
+            format: 'datetime',
+          },
+          matchesCount: {
+            description:
+              'Number of existing contact matches resulting of the user imports and of their imported contacts having imported the user. Matches stop being counted when the user either follows the matched contact or dismisses the match.',
+            type: 'integer',
+            minimum: 0,
+          },
+        },
+      },
+      notification: {
+        description:
+          'A stash object to be sent via bsync representing a notification to be created.',
+        type: 'object',
+        required: ['from', 'to'],
+        properties: {
+          from: {
+            description: 'The DID of who this notification comes from.',
+            type: 'string',
+            format: 'did',
+          },
+          to: {
+            description: 'The DID of who this notification should go to.',
+            type: 'string',
+            format: 'did',
+          },
+        },
+      },
+    },
+  },
+  AppBskyContactDismissMatch: {
+    lexicon: 1,
+    id: 'app.bsky.contact.dismissMatch',
+    defs: {
+      main: {
+        type: 'procedure',
+        description:
+          "Removes a match that was found via contact import. It shouldn't appear again if the same contact is re-imported. Requires authentication.",
+        input: {
+          encoding: 'application/json',
+          schema: {
+            type: 'object',
+            required: ['subject'],
+            properties: {
+              subject: {
+                description: "The subject's DID to dismiss the match with.",
+                type: 'string',
+                format: 'did',
+              },
+            },
+          },
+        },
+        output: {
+          encoding: 'application/json',
+          schema: {
+            type: 'object',
+            properties: {},
+          },
+        },
+        errors: [
+          {
+            name: 'InvalidDid',
+          },
+          {
+            name: 'InternalError',
+          },
+        ],
+      },
+    },
+  },
+  AppBskyContactGetMatches: {
+    lexicon: 1,
+    id: 'app.bsky.contact.getMatches',
+    defs: {
+      main: {
+        type: 'query',
+        description:
+          'Returns the matched contacts (contacts that were mutually imported). Excludes dismissed matches. Requires authentication.',
+        parameters: {
+          type: 'params',
+          properties: {
+            limit: {
+              type: 'integer',
+              minimum: 1,
+              maximum: 100,
+              default: 50,
+            },
+            cursor: {
+              type: 'string',
+            },
+          },
+        },
+        output: {
+          encoding: 'application/json',
+          schema: {
+            type: 'object',
+            required: ['matches'],
+            properties: {
+              cursor: {
+                type: 'string',
+              },
+              matches: {
+                type: 'array',
+                items: {
+                  type: 'ref',
+                  ref: 'lex:app.bsky.actor.defs#profileView',
+                },
+              },
+            },
+          },
+        },
+        errors: [
+          {
+            name: 'InvalidDid',
+          },
+          {
+            name: 'InvalidLimit',
+          },
+          {
+            name: 'InvalidCursor',
+          },
+          {
+            name: 'InternalError',
+          },
+        ],
+      },
+    },
+  },
+  AppBskyContactGetSyncStatus: {
+    lexicon: 1,
+    id: 'app.bsky.contact.getSyncStatus',
+    defs: {
+      main: {
+        type: 'query',
+        description:
+          "Gets the user's current contact import status. Requires authentication.",
+        parameters: {
+          type: 'params',
+          properties: {},
+        },
+        output: {
+          encoding: 'application/json',
+          schema: {
+            type: 'object',
+            properties: {
+              syncStatus: {
+                description:
+                  "If present, indicates the user has imported their contacts. If not present, indicates the user never used the feature or called `app.bsky.contact.removeData` and didn't import again since.",
+                type: 'ref',
+                ref: 'lex:app.bsky.contact.defs#syncStatus',
+              },
+            },
+          },
+        },
+        errors: [
+          {
+            name: 'InvalidDid',
+          },
+          {
+            name: 'InternalError',
+          },
+        ],
+      },
+    },
+  },
+  AppBskyContactImportContacts: {
+    lexicon: 1,
+    id: 'app.bsky.contact.importContacts',
+    defs: {
+      main: {
+        type: 'procedure',
+        description:
+          'Import contacts for securely matching with other users. This follows the protocol explained in https://docs.bsky.app/blog/contact-import-rfc. Requires authentication.',
+        input: {
+          encoding: 'application/json',
+          schema: {
+            type: 'object',
+            required: ['token', 'contacts'],
+            properties: {
+              token: {
+                description:
+                  'JWT to authenticate the call. Use the JWT received as a response to the call to `app.bsky.contact.verifyPhone`.',
+                type: 'string',
+              },
+              contacts: {
+                description:
+                  "List of phone numbers in global E.164 format (e.g., '+12125550123'). Phone numbers that cannot be normalized into a valid phone number will be discarded. Should not repeat the 'phone' input used in `app.bsky.contact.verifyPhone`.",
+                type: 'array',
+                items: {
+                  type: 'string',
+                },
+                minLength: 1,
+                maxLength: 1000,
+              },
+            },
+          },
+        },
+        output: {
+          encoding: 'application/json',
+          schema: {
+            type: 'object',
+            required: ['matchesAndContactIndexes'],
+            properties: {
+              matchesAndContactIndexes: {
+                description:
+                  'The users that matched during import and their indexes on the input contacts, so the client can correlate with its local list.',
+                type: 'array',
+                items: {
+                  type: 'ref',
+                  ref: 'lex:app.bsky.contact.defs#matchAndContactIndex',
+                },
+              },
+            },
+          },
+        },
+        errors: [
+          {
+            name: 'InvalidDid',
+          },
+          {
+            name: 'InvalidContacts',
+          },
+          {
+            name: 'TooManyContacts',
+          },
+          {
+            name: 'InvalidToken',
+          },
+          {
+            name: 'InternalError',
+          },
+        ],
+      },
+    },
+  },
+  AppBskyContactRemoveData: {
+    lexicon: 1,
+    id: 'app.bsky.contact.removeData',
+    defs: {
+      main: {
+        type: 'procedure',
+        description:
+          'Removes all stored hashes used for contact matching, existing matches, and sync status. Requires authentication.',
+        input: {
+          encoding: 'application/json',
+          schema: {
+            type: 'object',
+            properties: {},
+          },
+        },
+        output: {
+          encoding: 'application/json',
+          schema: {
+            type: 'object',
+            properties: {},
+          },
+        },
+        errors: [
+          {
+            name: 'InvalidDid',
+          },
+          {
+            name: 'InternalError',
+          },
+        ],
+      },
+    },
+  },
+  AppBskyContactSendNotification: {
+    lexicon: 1,
+    id: 'app.bsky.contact.sendNotification',
+    defs: {
+      main: {
+        type: 'procedure',
+        description:
+          'System endpoint to send notifications related to contact imports. Requires role authentication.',
+        input: {
+          encoding: 'application/json',
+          schema: {
+            type: 'object',
+            required: ['from', 'to'],
+            properties: {
+              from: {
+                description: 'The DID of who this notification comes from.',
+                type: 'string',
+                format: 'did',
+              },
+              to: {
+                description: 'The DID of who this notification should go to.',
+                type: 'string',
+                format: 'did',
+              },
+            },
+          },
+        },
+        output: {
+          encoding: 'application/json',
+          schema: {
+            type: 'object',
+            properties: {},
+          },
+        },
+      },
+    },
+  },
+  AppBskyContactStartPhoneVerification: {
+    lexicon: 1,
+    id: 'app.bsky.contact.startPhoneVerification',
+    defs: {
+      main: {
+        type: 'procedure',
+        description:
+          'Starts a phone verification flow. The phone passed will receive a code via SMS that should be passed to `app.bsky.contact.verifyPhone`. Requires authentication.',
+        input: {
+          encoding: 'application/json',
+          schema: {
+            type: 'object',
+            required: ['phone'],
+            properties: {
+              phone: {
+                description: 'The phone number to receive the code via SMS.',
+                type: 'string',
+              },
+            },
+          },
+        },
+        output: {
+          encoding: 'application/json',
+          schema: {
+            type: 'object',
+            properties: {},
+          },
+        },
+        errors: [
+          {
+            name: 'RateLimitExceeded',
+          },
+          {
+            name: 'InvalidDid',
+          },
+          {
+            name: 'InvalidPhone',
+          },
+          {
+            name: 'InternalError',
+          },
+        ],
+      },
+    },
+  },
+  AppBskyContactVerifyPhone: {
+    lexicon: 1,
+    id: 'app.bsky.contact.verifyPhone',
+    defs: {
+      main: {
+        type: 'procedure',
+        description:
+          'Verifies control over a phone number with a code received via SMS and starts a contact import session. Requires authentication.',
+        input: {
+          encoding: 'application/json',
+          schema: {
+            type: 'object',
+            required: ['phone', 'code'],
+            properties: {
+              phone: {
+                description:
+                  'The phone number to verify. Should be the same as the one passed to `app.bsky.contact.startPhoneVerification`.',
+                type: 'string',
+              },
+              code: {
+                description:
+                  'The code received via SMS as a result of the call to `app.bsky.contact.startPhoneVerification`.',
+                type: 'string',
+              },
+            },
+          },
+        },
+        output: {
+          encoding: 'application/json',
+          schema: {
+            type: 'object',
+            required: ['token'],
+            properties: {
+              token: {
+                description:
+                  'JWT to be used in a call to `app.bsky.contact.importContacts`. It is only valid for a single call.',
+                type: 'string',
+              },
+            },
+          },
+        },
+        errors: [
+          {
+            name: 'RateLimitExceeded',
+          },
+          {
+            name: 'InvalidDid',
+          },
+          {
+            name: 'InvalidPhone',
+          },
+          {
+            name: 'InvalidCode',
+          },
+          {
+            name: 'InternalError',
+          },
+        ],
+      },
+    },
+  },
+  AppBskyDraftCreateDraft: {
+    lexicon: 1,
+    id: 'app.bsky.draft.createDraft',
+    defs: {
+      main: {
+        type: 'procedure',
+        description:
+          'Inserts a draft using private storage (stash). An upper limit of drafts might be enforced. Requires authentication.',
+        input: {
+          encoding: 'application/json',
+          schema: {
+            type: 'object',
+            required: ['draft'],
+            properties: {
+              draft: {
+                type: 'ref',
+                ref: 'lex:app.bsky.draft.defs#draft',
+              },
+            },
+          },
+        },
+        output: {
+          encoding: 'application/json',
+          schema: {
+            type: 'object',
+            required: ['id'],
+            properties: {
+              id: {
+                type: 'string',
+                description: 'The ID of the created draft.',
+              },
+            },
+          },
+        },
+        errors: [
+          {
+            name: 'DraftLimitReached',
+            description:
+              'Trying to insert a new draft when the limit was already reached.',
+          },
+        ],
+      },
+    },
+  },
+  AppBskyDraftDefs: {
+    lexicon: 1,
+    id: 'app.bsky.draft.defs',
+    defs: {
+      draftWithId: {
+        description:
+          'A draft with an identifier, used to store drafts in private storage (stash).',
+        type: 'object',
+        required: ['id', 'draft'],
+        properties: {
+          id: {
+            description: 'A TID to be used as a draft identifier.',
+            type: 'string',
+            format: 'tid',
+          },
+          draft: {
+            type: 'ref',
+            ref: 'lex:app.bsky.draft.defs#draft',
+          },
+        },
+      },
+      draft: {
+        description: 'A draft containing an array of draft posts.',
+        type: 'object',
+        required: ['posts'],
+        properties: {
+          deviceId: {
+            type: 'string',
+            description:
+              'UUIDv4 identifier of the device that created this draft.',
+            maxLength: 100,
+          },
+          deviceName: {
+            type: 'string',
+            description:
+              'The device and/or platform on which the draft was created.',
+            maxLength: 100,
+          },
+          posts: {
+            description: 'Array of draft posts that compose this draft.',
+            type: 'array',
+            minLength: 1,
+            maxLength: 100,
+            items: {
+              type: 'ref',
+              ref: 'lex:app.bsky.draft.defs#draftPost',
+            },
+          },
+          langs: {
+            type: 'array',
+            description:
+              'Indicates human language of posts primary text content.',
+            maxLength: 3,
+            items: {
+              type: 'string',
+              format: 'language',
+            },
+          },
+          postgateEmbeddingRules: {
+            description:
+              'Embedding rules for the postgates to be created when this draft is published.',
+            type: 'array',
+            maxLength: 5,
+            items: {
+              type: 'union',
+              refs: ['lex:app.bsky.feed.postgate#disableRule'],
+            },
+          },
+          threadgateAllow: {
+            description:
+              'Allow-rules for the threadgate to be created when this draft is published.',
+            type: 'array',
+            maxLength: 5,
+            items: {
+              type: 'union',
+              refs: [
+                'lex:app.bsky.feed.threadgate#mentionRule',
+                'lex:app.bsky.feed.threadgate#followerRule',
+                'lex:app.bsky.feed.threadgate#followingRule',
+                'lex:app.bsky.feed.threadgate#listRule',
+              ],
+            },
+          },
+        },
+      },
+      draftPost: {
+        description: 'One of the posts that compose a draft.',
+        type: 'object',
+        required: ['text'],
+        properties: {
+          text: {
+            type: 'string',
+            maxLength: 10000,
+            maxGraphemes: 1000,
+            description:
+              'The primary post content. It has a higher limit than post contents to allow storing a larger text that can later be refined into smaller posts.',
+          },
+          labels: {
+            type: 'union',
+            description:
+              'Self-label values for this post. Effectively content warnings.',
+            refs: ['lex:com.atproto.label.defs#selfLabels'],
+          },
+          embedImages: {
+            type: 'array',
+            items: {
+              type: 'ref',
+              ref: 'lex:app.bsky.draft.defs#draftEmbedImage',
+            },
+            maxLength: 4,
+          },
+          embedVideos: {
+            type: 'array',
+            items: {
+              type: 'ref',
+              ref: 'lex:app.bsky.draft.defs#draftEmbedVideo',
+            },
+            maxLength: 1,
+          },
+          embedExternals: {
+            type: 'array',
+            items: {
+              type: 'ref',
+              ref: 'lex:app.bsky.draft.defs#draftEmbedExternal',
+            },
+            maxLength: 1,
+          },
+          embedRecords: {
+            type: 'array',
+            items: {
+              type: 'ref',
+              ref: 'lex:app.bsky.draft.defs#draftEmbedRecord',
+            },
+            maxLength: 1,
+          },
+        },
+      },
+      draftView: {
+        description: 'View to present drafts data to users.',
+        type: 'object',
+        required: ['id', 'draft', 'createdAt', 'updatedAt'],
+        properties: {
+          id: {
+            description: 'A TID to be used as a draft identifier.',
+            type: 'string',
+            format: 'tid',
+          },
+          draft: {
+            type: 'ref',
+            ref: 'lex:app.bsky.draft.defs#draft',
+          },
+          createdAt: {
+            description: 'The time the draft was created.',
+            type: 'string',
+            format: 'datetime',
+          },
+          updatedAt: {
+            description: 'The time the draft was last updated.',
+            type: 'string',
+            format: 'datetime',
+          },
+        },
+      },
+      draftEmbedLocalRef: {
+        type: 'object',
+        required: ['path'],
+        properties: {
+          path: {
+            type: 'string',
+            description:
+              'Local, on-device ref to file to be embedded. Embeds are currently device-bound for drafts.',
+            minLength: 1,
+            maxLength: 1024,
+          },
+        },
+      },
+      draftEmbedCaption: {
+        type: 'object',
+        required: ['lang', 'content'],
+        properties: {
+          lang: {
+            type: 'string',
+            format: 'language',
+          },
+          content: {
+            type: 'string',
+            maxLength: 10000,
+          },
+        },
+      },
+      draftEmbedImage: {
+        type: 'object',
+        required: ['localRef'],
+        properties: {
+          localRef: {
+            type: 'ref',
+            ref: 'lex:app.bsky.draft.defs#draftEmbedLocalRef',
+          },
+          alt: {
+            type: 'string',
+            maxGraphemes: 2000,
+          },
+        },
+      },
+      draftEmbedVideo: {
+        type: 'object',
+        required: ['localRef'],
+        properties: {
+          localRef: {
+            type: 'ref',
+            ref: 'lex:app.bsky.draft.defs#draftEmbedLocalRef',
+          },
+          alt: {
+            type: 'string',
+            maxGraphemes: 2000,
+          },
+          captions: {
+            type: 'array',
+            items: {
+              type: 'ref',
+              ref: 'lex:app.bsky.draft.defs#draftEmbedCaption',
+            },
+            maxLength: 20,
+          },
+        },
+      },
+      draftEmbedExternal: {
+        type: 'object',
+        required: ['uri'],
+        properties: {
+          uri: {
+            type: 'string',
+            format: 'uri',
+          },
+        },
+      },
+      draftEmbedRecord: {
+        type: 'object',
+        required: ['record'],
+        properties: {
+          record: {
+            type: 'ref',
+            ref: 'lex:com.atproto.repo.strongRef',
+          },
+        },
+      },
+    },
+  },
+  AppBskyDraftDeleteDraft: {
+    lexicon: 1,
+    id: 'app.bsky.draft.deleteDraft',
+    defs: {
+      main: {
+        type: 'procedure',
+        description: 'Deletes a draft by ID. Requires authentication.',
+        input: {
+          encoding: 'application/json',
+          schema: {
+            type: 'object',
+            required: ['id'],
+            properties: {
+              id: {
+                type: 'string',
+                format: 'tid',
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+  AppBskyDraftGetDrafts: {
+    lexicon: 1,
+    id: 'app.bsky.draft.getDrafts',
+    defs: {
+      main: {
+        type: 'query',
+        description: 'Gets views of user drafts. Requires authentication.',
+        parameters: {
+          type: 'params',
+          properties: {
+            limit: {
+              type: 'integer',
+              minimum: 1,
+              maximum: 100,
+              default: 50,
+            },
+            cursor: {
+              type: 'string',
+            },
+          },
+        },
+        output: {
+          encoding: 'application/json',
+          schema: {
+            type: 'object',
+            required: ['drafts'],
+            properties: {
+              cursor: {
+                type: 'string',
+              },
+              drafts: {
+                type: 'array',
+                items: {
+                  type: 'ref',
+                  ref: 'lex:app.bsky.draft.defs#draftView',
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+  AppBskyDraftUpdateDraft: {
+    lexicon: 1,
+    id: 'app.bsky.draft.updateDraft',
+    defs: {
+      main: {
+        type: 'procedure',
+        description:
+          "Updates a draft using private storage (stash). If the draft ID points to a non-existing ID, the update will be silently ignored. This is done because updates don't enforce draft limit, so it accepts all writes, but will ignore invalid ones. Requires authentication.",
+        input: {
+          encoding: 'application/json',
+          schema: {
+            type: 'object',
+            required: ['draft'],
+            properties: {
+              draft: {
+                type: 'ref',
+                ref: 'lex:app.bsky.draft.defs#draftWithId',
+              },
+            },
+          },
+        },
       },
     },
   },
@@ -1558,6 +3035,11 @@ export const schemaDict = {
             type: 'ref',
             ref: 'lex:app.bsky.embed.defs#aspectRatio',
           },
+          presentation: {
+            type: 'string',
+            description: 'A hint to the client about how to present the video.',
+            knownValues: ['default', 'gif'],
+          },
         },
       },
       caption: {
@@ -1600,6 +3082,11 @@ export const schemaDict = {
             type: 'ref',
             ref: 'lex:app.bsky.embed.defs#aspectRatio',
           },
+          presentation: {
+            type: 'string',
+            description: 'A hint to the client about how to present the video.',
+            knownValues: ['default', 'gif'],
+          },
         },
       },
     },
@@ -1637,6 +3124,9 @@ export const schemaDict = {
               'lex:app.bsky.embed.recordWithMedia#view',
             ],
           },
+          bookmarkCount: {
+            type: 'integer',
+          },
           replyCount: {
             type: 'integer',
           },
@@ -1668,6 +3158,10 @@ export const schemaDict = {
             type: 'ref',
             ref: 'lex:app.bsky.feed.defs#threadgateView',
           },
+          debug: {
+            type: 'unknown',
+            description: 'Debug information for internal development',
+          },
         },
       },
       viewerState: {
@@ -1682,6 +3176,9 @@ export const schemaDict = {
           like: {
             type: 'string',
             format: 'at-uri',
+          },
+          bookmarked: {
+            type: 'boolean',
           },
           threadMuted: {
             type: 'boolean',
@@ -3454,6 +4951,10 @@ export const schemaDict = {
             type: 'object',
             required: ['interactions'],
             properties: {
+              feed: {
+                type: 'string',
+                format: 'at-uri',
+              },
               interactions: {
                 type: 'array',
                 items: {
@@ -3513,7 +5014,7 @@ export const schemaDict = {
             },
             hiddenReplies: {
               type: 'array',
-              maxLength: 50,
+              maxLength: 300,
               items: {
                 type: 'string',
                 format: 'at-uri',
@@ -3880,6 +5381,30 @@ export const schemaDict = {
             description:
               'if the actor is followed by this DID, contains the AT-URI of the follow record',
           },
+          blocking: {
+            type: 'string',
+            format: 'at-uri',
+            description:
+              'if the actor blocks this DID, this is the AT-URI of the block record',
+          },
+          blockedBy: {
+            type: 'string',
+            format: 'at-uri',
+            description:
+              'if the actor is blocked by this DID, contains the AT-URI of the block record',
+          },
+          blockingByList: {
+            type: 'string',
+            format: 'at-uri',
+            description:
+              'if the actor blocks this DID via a block list, this is the AT-URI of the listblock record',
+          },
+          blockedByList: {
+            type: 'string',
+            format: 'at-uri',
+            description:
+              'if the actor is blocked by this DID via a block list, contains the AT-URI of the listblock record',
+          },
         },
       },
     },
@@ -3904,6 +5429,10 @@ export const schemaDict = {
             createdAt: {
               type: 'string',
               format: 'datetime',
+            },
+            via: {
+              type: 'ref',
+              ref: 'lex:com.atproto.repo.strongRef',
             },
           },
         },
@@ -4714,16 +6243,20 @@ export const schemaDict = {
                   ref: 'lex:app.bsky.actor.defs#profileView',
                 },
               },
+              recIdStr: {
+                type: 'string',
+                description:
+                  'Snowflake for this recommendation, use when submitting recommendation events.',
+              },
               isFallback: {
                 type: 'boolean',
                 description:
-                  'If true, response has fallen-back to generic results, and is not scoped using relativeToDid',
+                  'DEPRECATED, unused. Previously: if true, response has fallen-back to generic results, and is not scoped using relativeToDid',
                 default: false,
               },
               recId: {
                 type: 'integer',
-                description:
-                  'Snowflake for this recommendation, use when submitting recommendation events.',
+                description: 'DEPRECATED: use recIdStr instead.',
               },
             },
           },
@@ -5774,6 +7307,7 @@ export const schemaDict = {
               'like-via-repost',
               'repost-via-repost',
               'subscribed-post',
+              'contact-match',
             ],
           },
           reasonSubject: {
@@ -6453,6 +7987,144 @@ export const schemaDict = {
       },
     },
   },
+  AppBskyUnspeccedGetOnboardingSuggestedStarterPacks: {
+    lexicon: 1,
+    id: 'app.bsky.unspecced.getOnboardingSuggestedStarterPacks',
+    defs: {
+      main: {
+        type: 'query',
+        description: 'Get a list of suggested starterpacks for onboarding',
+        parameters: {
+          type: 'params',
+          properties: {
+            limit: {
+              type: 'integer',
+              minimum: 1,
+              maximum: 25,
+              default: 10,
+            },
+          },
+        },
+        output: {
+          encoding: 'application/json',
+          schema: {
+            type: 'object',
+            required: ['starterPacks'],
+            properties: {
+              starterPacks: {
+                type: 'array',
+                items: {
+                  type: 'ref',
+                  ref: 'lex:app.bsky.graph.defs#starterPackView',
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+  AppBskyUnspeccedGetOnboardingSuggestedStarterPacksSkeleton: {
+    lexicon: 1,
+    id: 'app.bsky.unspecced.getOnboardingSuggestedStarterPacksSkeleton',
+    defs: {
+      main: {
+        type: 'query',
+        description:
+          'Get a skeleton of suggested starterpacks for onboarding. Intended to be called and hydrated by app.bsky.unspecced.getOnboardingSuggestedStarterPacks',
+        parameters: {
+          type: 'params',
+          properties: {
+            viewer: {
+              type: 'string',
+              format: 'did',
+              description:
+                'DID of the account making the request (not included for public/unauthenticated queries).',
+            },
+            limit: {
+              type: 'integer',
+              minimum: 1,
+              maximum: 25,
+              default: 10,
+            },
+          },
+        },
+        output: {
+          encoding: 'application/json',
+          schema: {
+            type: 'object',
+            required: ['starterPacks'],
+            properties: {
+              starterPacks: {
+                type: 'array',
+                items: {
+                  type: 'string',
+                  format: 'at-uri',
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+  AppBskyUnspeccedGetOnboardingSuggestedUsersSkeleton: {
+    lexicon: 1,
+    id: 'app.bsky.unspecced.getOnboardingSuggestedUsersSkeleton',
+    defs: {
+      main: {
+        type: 'query',
+        description:
+          'Get a skeleton of suggested users for onboarding. Intended to be called and hydrated by app.bsky.unspecced.getSuggestedOnboardingUsers',
+        parameters: {
+          type: 'params',
+          properties: {
+            viewer: {
+              type: 'string',
+              format: 'did',
+              description:
+                'DID of the account making the request (not included for public/unauthenticated queries).',
+            },
+            category: {
+              type: 'string',
+              description: 'Category of users to get suggestions for.',
+            },
+            limit: {
+              type: 'integer',
+              minimum: 1,
+              maximum: 50,
+              default: 25,
+            },
+          },
+        },
+        output: {
+          encoding: 'application/json',
+          schema: {
+            type: 'object',
+            required: ['dids'],
+            properties: {
+              dids: {
+                type: 'array',
+                items: {
+                  type: 'string',
+                  format: 'did',
+                },
+              },
+              recId: {
+                type: 'string',
+                description: 'DEPRECATED: use recIdStr instead.',
+              },
+              recIdStr: {
+                type: 'string',
+                description:
+                  'Snowflake for this recommendation, use when submitting recommendation events.',
+              },
+            },
+          },
+        },
+      },
+    },
+  },
   AppBskyUnspeccedGetPopularFeedGenerators: {
     lexicon: 1,
     id: 'app.bsky.unspecced.getPopularFeedGenerators',
@@ -6516,12 +8188,6 @@ export const schemaDict = {
               format: 'at-uri',
               description:
                 'Reference (AT-URI) to post record. This is the anchor post.',
-            },
-            prioritizeFollowedUsers: {
-              type: 'boolean',
-              description:
-                'Whether to prioritize posts from followed users. It only has effect when the user is authenticated.',
-              default: false,
             },
           },
         },
@@ -6603,12 +8269,6 @@ export const schemaDict = {
               default: 10,
               minimum: 0,
               maximum: 100,
-            },
-            prioritizeFollowedUsers: {
-              type: 'boolean',
-              description:
-                'Whether to prioritize posts from followed users. It only has effect when the user is authenticated.',
-              default: false,
             },
             sort: {
               type: 'string',
@@ -6753,6 +8413,56 @@ export const schemaDict = {
       },
     },
   },
+  AppBskyUnspeccedGetSuggestedOnboardingUsers: {
+    lexicon: 1,
+    id: 'app.bsky.unspecced.getSuggestedOnboardingUsers',
+    defs: {
+      main: {
+        type: 'query',
+        description: 'Get a list of suggested users for onboarding',
+        parameters: {
+          type: 'params',
+          properties: {
+            category: {
+              type: 'string',
+              description: 'Category of users to get suggestions for.',
+            },
+            limit: {
+              type: 'integer',
+              minimum: 1,
+              maximum: 50,
+              default: 25,
+            },
+          },
+        },
+        output: {
+          encoding: 'application/json',
+          schema: {
+            type: 'object',
+            required: ['actors'],
+            properties: {
+              actors: {
+                type: 'array',
+                items: {
+                  type: 'ref',
+                  ref: 'lex:app.bsky.actor.defs#profileView',
+                },
+              },
+              recId: {
+                type: 'string',
+                description: 'DEPRECATED: use recIdStr instead.',
+              },
+              recIdStr: {
+                type: 'string',
+                description:
+                  'Snowflake for this recommendation, use when submitting recommendation events.',
+              },
+            },
+          },
+        },
+      },
+    },
+  },
   AppBskyUnspeccedGetSuggestedStarterPacks: {
     lexicon: 1,
     id: 'app.bsky.unspecced.getSuggestedStarterPacks',
@@ -6869,6 +8579,15 @@ export const schemaDict = {
                   ref: 'lex:app.bsky.actor.defs#profileView',
                 },
               },
+              recId: {
+                type: 'string',
+                description: 'DEPRECATED: use recIdStr instead.',
+              },
+              recIdStr: {
+                type: 'string',
+                description:
+                  'Snowflake for this recommendation, use when submitting recommendation events.',
+              },
             },
           },
         },
@@ -6916,6 +8635,15 @@ export const schemaDict = {
                   type: 'string',
                   format: 'did',
                 },
+              },
+              recId: {
+                type: 'string',
+                description: 'DEPRECATED: use recIdStr instead.',
+              },
+              recIdStr: {
+                type: 'string',
+                description:
+                  'Snowflake for this recommendation, use when submitting recommendation events.',
               },
             },
           },
@@ -6981,6 +8709,10 @@ export const schemaDict = {
               },
               recId: {
                 type: 'integer',
+                description: 'DEPRECATED: use recIdStr instead.',
+              },
+              recIdStr: {
+                type: 'string',
                 description:
                   'Snowflake for this recommendation, use when submitting recommendation events.',
               },
@@ -10249,6 +11981,57 @@ export const schemaDict = {
       },
     },
   },
+  ComAtprotoLexiconResolveLexicon: {
+    lexicon: 1,
+    id: 'com.atproto.lexicon.resolveLexicon',
+    defs: {
+      main: {
+        type: 'query',
+        description: 'Resolves an atproto lexicon (NSID) to a schema.',
+        parameters: {
+          type: 'params',
+          properties: {
+            nsid: {
+              format: 'nsid',
+              type: 'string',
+              description: 'The lexicon NSID to resolve.',
+            },
+          },
+          required: ['nsid'],
+        },
+        output: {
+          encoding: 'application/json',
+          schema: {
+            type: 'object',
+            properties: {
+              cid: {
+                type: 'string',
+                format: 'cid',
+                description: 'The CID of the lexicon schema record.',
+              },
+              schema: {
+                type: 'ref',
+                ref: 'lex:com.atproto.lexicon.schema#main',
+                description: 'The resolved lexicon schema record.',
+              },
+              uri: {
+                type: 'string',
+                format: 'at-uri',
+                description: 'The AT-URI of the lexicon schema record.',
+              },
+            },
+            required: ['uri', 'cid', 'schema'],
+          },
+        },
+        errors: [
+          {
+            description: 'No lexicon was resolved for the NSID.',
+            name: 'LexiconNotFound',
+          },
+        ],
+      },
+    },
+  },
   ComAtprotoLexiconSchema: {
     lexicon: 1,
     id: 'com.atproto.lexicon.schema',
@@ -10389,36 +12172,81 @@ export const schemaDict = {
           'com.atproto.moderation.defs#reasonRude',
           'com.atproto.moderation.defs#reasonOther',
           'com.atproto.moderation.defs#reasonAppeal',
+          'tools.ozone.report.defs#reasonAppeal',
+          'tools.ozone.report.defs#reasonOther',
+          'tools.ozone.report.defs#reasonViolenceAnimal',
+          'tools.ozone.report.defs#reasonViolenceThreats',
+          'tools.ozone.report.defs#reasonViolenceGraphicContent',
+          'tools.ozone.report.defs#reasonViolenceGlorification',
+          'tools.ozone.report.defs#reasonViolenceExtremistContent',
+          'tools.ozone.report.defs#reasonViolenceTrafficking',
+          'tools.ozone.report.defs#reasonViolenceOther',
+          'tools.ozone.report.defs#reasonSexualAbuseContent',
+          'tools.ozone.report.defs#reasonSexualNCII',
+          'tools.ozone.report.defs#reasonSexualDeepfake',
+          'tools.ozone.report.defs#reasonSexualAnimal',
+          'tools.ozone.report.defs#reasonSexualUnlabeled',
+          'tools.ozone.report.defs#reasonSexualOther',
+          'tools.ozone.report.defs#reasonChildSafetyCSAM',
+          'tools.ozone.report.defs#reasonChildSafetyGroom',
+          'tools.ozone.report.defs#reasonChildSafetyPrivacy',
+          'tools.ozone.report.defs#reasonChildSafetyHarassment',
+          'tools.ozone.report.defs#reasonChildSafetyOther',
+          'tools.ozone.report.defs#reasonHarassmentTroll',
+          'tools.ozone.report.defs#reasonHarassmentTargeted',
+          'tools.ozone.report.defs#reasonHarassmentHateSpeech',
+          'tools.ozone.report.defs#reasonHarassmentDoxxing',
+          'tools.ozone.report.defs#reasonHarassmentOther',
+          'tools.ozone.report.defs#reasonMisleadingBot',
+          'tools.ozone.report.defs#reasonMisleadingImpersonation',
+          'tools.ozone.report.defs#reasonMisleadingSpam',
+          'tools.ozone.report.defs#reasonMisleadingScam',
+          'tools.ozone.report.defs#reasonMisleadingElections',
+          'tools.ozone.report.defs#reasonMisleadingOther',
+          'tools.ozone.report.defs#reasonRuleSiteSecurity',
+          'tools.ozone.report.defs#reasonRuleProhibitedSales',
+          'tools.ozone.report.defs#reasonRuleBanEvasion',
+          'tools.ozone.report.defs#reasonRuleOther',
+          'tools.ozone.report.defs#reasonSelfHarmContent',
+          'tools.ozone.report.defs#reasonSelfHarmED',
+          'tools.ozone.report.defs#reasonSelfHarmStunts',
+          'tools.ozone.report.defs#reasonSelfHarmSubstances',
+          'tools.ozone.report.defs#reasonSelfHarmOther',
         ],
       },
       reasonSpam: {
         type: 'token',
-        description: 'Spam: frequent unwanted promotion, replies, mentions',
+        description:
+          'Spam: frequent unwanted promotion, replies, mentions. Prefer new lexicon definition `tools.ozone.report.defs#reasonMisleadingSpam`.',
       },
       reasonViolation: {
         type: 'token',
-        description: 'Direct violation of server rules, laws, terms of service',
+        description:
+          'Direct violation of server rules, laws, terms of service. Prefer new lexicon definition `tools.ozone.report.defs#reasonRuleOther`.',
       },
       reasonMisleading: {
         type: 'token',
-        description: 'Misleading identity, affiliation, or content',
+        description:
+          'Misleading identity, affiliation, or content. Prefer new lexicon definition `tools.ozone.report.defs#reasonMisleadingOther`.',
       },
       reasonSexual: {
         type: 'token',
-        description: 'Unwanted or mislabeled sexual content',
+        description:
+          'Unwanted or mislabeled sexual content. Prefer new lexicon definition `tools.ozone.report.defs#reasonSexualUnlabeled`.',
       },
       reasonRude: {
         type: 'token',
         description:
-          'Rude, harassing, explicit, or otherwise unwelcoming behavior',
+          'Rude, harassing, explicit, or otherwise unwelcoming behavior. Prefer new lexicon definition `tools.ozone.report.defs#reasonHarassmentOther`.',
       },
       reasonOther: {
         type: 'token',
-        description: 'Other: reports not falling under another report category',
+        description:
+          'Reports not falling under another report category. Prefer new lexicon definition `tools.ozone.report.defs#reasonOther`.',
       },
       reasonAppeal: {
         type: 'token',
-        description: 'Appeal: appeal a previously taken moderation action',
+        description: 'Appeal a previously taken moderation action',
       },
       subjectType: {
         type: 'string',
@@ -11780,7 +13608,16 @@ export const schemaDict = {
     defs: {
       main: {
         type: 'procedure',
-        description: 'Delete the current session. Requires auth.',
+        description:
+          "Delete the current session. Requires auth using the 'refreshJwt' (not the 'accessJwt').",
+        errors: [
+          {
+            name: 'InvalidToken',
+          },
+          {
+            name: 'ExpiredToken',
+          },
+        ],
       },
     },
   },
@@ -11979,6 +13816,9 @@ export const schemaDict = {
                 type: 'string',
                 format: 'did',
               },
+              didDoc: {
+                type: 'unknown',
+              },
               email: {
                 type: 'string',
               },
@@ -11987,9 +13827,6 @@ export const schemaDict = {
               },
               emailAuthFactor: {
                 type: 'boolean',
-              },
-              didDoc: {
-                type: 'unknown',
               },
               active: {
                 type: 'boolean',
@@ -12084,6 +13921,15 @@ export const schemaDict = {
               didDoc: {
                 type: 'unknown',
               },
+              email: {
+                type: 'string',
+              },
+              emailConfirmed: {
+                type: 'boolean',
+              },
+              emailAuthFactor: {
+                type: 'boolean',
+              },
               active: {
                 type: 'boolean',
               },
@@ -12099,6 +13945,12 @@ export const schemaDict = {
         errors: [
           {
             name: 'AccountTakedown',
+          },
+          {
+            name: 'InvalidToken',
+          },
+          {
+            name: 'ExpiredToken',
           },
         ],
       },
@@ -13492,6 +15344,46 @@ export const schemaDict = {
       },
     },
   },
+  ComAtprotoTempDereferenceScope: {
+    lexicon: 1,
+    id: 'com.atproto.temp.dereferenceScope',
+    defs: {
+      main: {
+        type: 'query',
+        description:
+          'Allows finding the oauth permission scope from a reference',
+        parameters: {
+          type: 'params',
+          required: ['scope'],
+          properties: {
+            scope: {
+              type: 'string',
+              description: "The scope reference (starts with 'ref:')",
+            },
+          },
+        },
+        output: {
+          encoding: 'application/json',
+          schema: {
+            type: 'object',
+            required: ['scope'],
+            properties: {
+              scope: {
+                type: 'string',
+                description: 'The full oauth permission scope',
+              },
+            },
+          },
+        },
+        errors: [
+          {
+            name: 'InvalidScopeReference',
+            description: 'An invalid scope reference was provided.',
+          },
+        ],
+      },
+    },
+  },
   ComAtprotoTempFetchLabels: {
     lexicon: 1,
     id: 'com.atproto.temp.fetchLabels',
@@ -13933,6 +15825,88 @@ export const schemaDict = {
       },
     },
   },
+  ToolsOzoneModerationCancelScheduledActions: {
+    lexicon: 1,
+    id: 'tools.ozone.moderation.cancelScheduledActions',
+    defs: {
+      main: {
+        type: 'procedure',
+        description:
+          'Cancel all pending scheduled moderation actions for specified subjects',
+        input: {
+          encoding: 'application/json',
+          schema: {
+            type: 'object',
+            required: ['subjects'],
+            properties: {
+              subjects: {
+                type: 'array',
+                maxLength: 100,
+                items: {
+                  type: 'string',
+                  format: 'did',
+                },
+                description:
+                  'Array of DID subjects to cancel scheduled actions for',
+              },
+              comment: {
+                type: 'string',
+                description:
+                  'Optional comment describing the reason for cancellation',
+              },
+            },
+          },
+        },
+        output: {
+          encoding: 'application/json',
+          schema: {
+            type: 'ref',
+            ref: 'lex:tools.ozone.moderation.cancelScheduledActions#cancellationResults',
+          },
+        },
+      },
+      cancellationResults: {
+        type: 'object',
+        required: ['succeeded', 'failed'],
+        properties: {
+          succeeded: {
+            type: 'array',
+            items: {
+              type: 'string',
+              format: 'did',
+            },
+            description:
+              'DIDs for which all pending scheduled actions were successfully cancelled',
+          },
+          failed: {
+            type: 'array',
+            items: {
+              type: 'ref',
+              ref: 'lex:tools.ozone.moderation.cancelScheduledActions#failedCancellation',
+            },
+            description:
+              'DIDs for which cancellation failed with error details',
+          },
+        },
+      },
+      failedCancellation: {
+        type: 'object',
+        required: ['did', 'error'],
+        properties: {
+          did: {
+            type: 'string',
+            format: 'did',
+          },
+          error: {
+            type: 'string',
+          },
+          errorCode: {
+            type: 'string',
+          },
+        },
+      },
+    },
+  },
   ToolsOzoneModerationDefs: {
     lexicon: 1,
     id: 'tools.ozone.moderation.defs',
@@ -13975,6 +15949,10 @@ export const schemaDict = {
               'lex:tools.ozone.moderation.defs#modEventPriorityScore',
               'lex:tools.ozone.moderation.defs#ageAssuranceEvent',
               'lex:tools.ozone.moderation.defs#ageAssuranceOverrideEvent',
+              'lex:tools.ozone.moderation.defs#ageAssurancePurgeEvent',
+              'lex:tools.ozone.moderation.defs#revokeAccountCredentialsEvent',
+              'lex:tools.ozone.moderation.defs#scheduleTakedownEvent',
+              'lex:tools.ozone.moderation.defs#cancelScheduledTakedownEvent',
             ],
           },
           subject: {
@@ -14049,6 +16027,10 @@ export const schemaDict = {
               'lex:tools.ozone.moderation.defs#modEventPriorityScore',
               'lex:tools.ozone.moderation.defs#ageAssuranceEvent',
               'lex:tools.ozone.moderation.defs#ageAssuranceOverrideEvent',
+              'lex:tools.ozone.moderation.defs#ageAssurancePurgeEvent',
+              'lex:tools.ozone.moderation.defs#revokeAccountCredentialsEvent',
+              'lex:tools.ozone.moderation.defs#scheduleTakedownEvent',
+              'lex:tools.ozone.moderation.defs#cancelScheduledTakedownEvent',
             ],
           },
           subject: {
@@ -14195,6 +16177,12 @@ export const schemaDict = {
             type: 'ref',
             ref: 'lex:tools.ozone.moderation.defs#recordsStats',
           },
+          accountStrike: {
+            description:
+              'Strike information for the account (account-level only)',
+            type: 'ref',
+            ref: 'lex:tools.ozone.moderation.defs#accountStrike',
+          },
           ageAssuranceState: {
             type: 'string',
             description: 'Current age assurance state of the subject.',
@@ -14307,13 +16295,39 @@ export const schemaDict = {
           },
         },
       },
+      accountStrike: {
+        description: 'Strike information for an account',
+        type: 'object',
+        properties: {
+          activeStrikeCount: {
+            description:
+              'Current number of active strikes (excluding expired strikes)',
+            type: 'integer',
+          },
+          totalStrikeCount: {
+            description:
+              'Total number of strikes ever received (including expired strikes)',
+            type: 'integer',
+          },
+          firstStrikeAt: {
+            description: 'Timestamp of the first strike received',
+            type: 'string',
+            format: 'datetime',
+          },
+          lastStrikeAt: {
+            description: 'Timestamp of the most recent strike received',
+            type: 'string',
+            format: 'datetime',
+          },
+        },
+      },
       subjectReviewState: {
         type: 'string',
         knownValues: [
-          'lex:tools.ozone.moderation.defs#reviewOpen',
-          'lex:tools.ozone.moderation.defs#reviewEscalated',
-          'lex:tools.ozone.moderation.defs#reviewClosed',
-          'lex:tools.ozone.moderation.defs#reviewNone',
+          'tools.ozone.moderation.defs#reviewOpen',
+          'tools.ozone.moderation.defs#reviewEscalated',
+          'tools.ozone.moderation.defs#reviewClosed',
+          'tools.ozone.moderation.defs#reviewNone',
         ],
       },
       reviewOpen: {
@@ -14362,6 +16376,31 @@ export const schemaDict = {
             description:
               'Names/Keywords of the policies that drove the decision.',
           },
+          severityLevel: {
+            type: 'string',
+            description:
+              "Severity level of the violation (e.g., 'sev-0', 'sev-1', 'sev-2', etc.).",
+          },
+          targetServices: {
+            type: 'array',
+            items: {
+              type: 'string',
+              knownValues: ['appview', 'pds'],
+            },
+            description:
+              'List of services where the takedown should be applied. If empty or not provided, takedown is applied on all configured services.',
+          },
+          strikeCount: {
+            type: 'integer',
+            description:
+              'Number of strikes to assign to the user for this violation.',
+          },
+          strikeExpiresAt: {
+            type: 'string',
+            format: 'datetime',
+            description:
+              'When the strike should expire. If not provided, the strike never expires.',
+          },
         },
       },
       modEventReverseTakedown: {
@@ -14371,6 +16410,25 @@ export const schemaDict = {
           comment: {
             type: 'string',
             description: 'Describe reasoning behind the reversal.',
+          },
+          policies: {
+            type: 'array',
+            maxLength: 5,
+            items: {
+              type: 'string',
+            },
+            description:
+              'Names/Keywords of the policy infraction for which takedown is being reversed.',
+          },
+          severityLevel: {
+            type: 'string',
+            description:
+              "Severity level of the violation. Usually set from the last policy infraction's severity.",
+          },
+          strikeCount: {
+            type: 'integer',
+            description:
+              "Number of strikes to subtract from the user's strike count. Usually set from the last policy infraction's severity.",
           },
         },
       },
@@ -14471,15 +16529,29 @@ export const schemaDict = {
             format: 'datetime',
             description: 'The date and time of this write operation.',
           },
-          status: {
-            type: 'string',
-            description: 'The status of the age assurance process.',
-            knownValues: ['unknown', 'pending', 'assured'],
-          },
           attemptId: {
             type: 'string',
             description:
               'The unique identifier for this instance of the age assurance flow, in UUID format.',
+          },
+          status: {
+            type: 'string',
+            description: 'The status of the Age Assurance process.',
+            knownValues: ['unknown', 'pending', 'assured'],
+          },
+          access: {
+            type: 'ref',
+            ref: 'lex:app.bsky.ageassurance.defs#access',
+          },
+          countryCode: {
+            type: 'string',
+            description:
+              'The ISO 3166-1 alpha-2 country code provided when beginning the Age Assurance flow.',
+          },
+          regionCode: {
+            type: 'string',
+            description:
+              'The ISO 3166-2 region code provided when beginning the Age Assurance flow.',
           },
           initIp: {
             type: 'string',
@@ -14511,9 +16583,40 @@ export const schemaDict = {
               'The status to be set for the user decided by a moderator, overriding whatever value the user had previously. Use reset to default to original state.',
             knownValues: ['assured', 'reset', 'blocked'],
           },
+          access: {
+            type: 'ref',
+            ref: 'lex:app.bsky.ageassurance.defs#access',
+          },
           comment: {
             type: 'string',
+            minLength: 1,
             description: 'Comment describing the reason for the override.',
+          },
+        },
+      },
+      ageAssurancePurgeEvent: {
+        type: 'object',
+        description:
+          'Purges all age assurance events for the subject. Only works on DID subjects. Moderator-only.',
+        required: ['comment'],
+        properties: {
+          comment: {
+            type: 'string',
+            minLength: 1,
+            description: 'Comment describing the reason for the purge.',
+          },
+        },
+      },
+      revokeAccountCredentialsEvent: {
+        type: 'object',
+        description:
+          'Account credentials revocation by moderators. Only works on DID subjects.',
+        required: ['comment'],
+        properties: {
+          comment: {
+            minLength: 1,
+            type: 'string',
+            description: 'Comment describing the reason for the revocation.',
           },
         },
       },
@@ -14602,6 +16705,36 @@ export const schemaDict = {
           comment: {
             type: 'string',
             description: 'Additional comment about the outgoing comm.',
+          },
+          policies: {
+            type: 'array',
+            maxLength: 5,
+            items: {
+              type: 'string',
+            },
+            description:
+              'Names/Keywords of the policies that necessitated the email.',
+          },
+          severityLevel: {
+            type: 'string',
+            description:
+              "Severity level of the violation. Normally 'sev-1' that adds strike on repeat offense",
+          },
+          strikeCount: {
+            type: 'integer',
+            description:
+              'Number of strikes to assign to the user for this violation. Normally 0 as an indicator of a warning and only added as a strike on a repeat offense.',
+          },
+          strikeExpiresAt: {
+            type: 'string',
+            format: 'datetime',
+            description:
+              'When the strike should expire. If not provided, the strike never expires.',
+          },
+          isDelivered: {
+            type: 'boolean',
+            description:
+              "Indicates whether the email was successfully delivered to the user's inbox.",
           },
         },
       },
@@ -14719,6 +16852,37 @@ export const schemaDict = {
           timestamp: {
             type: 'string',
             format: 'datetime',
+          },
+        },
+      },
+      scheduleTakedownEvent: {
+        type: 'object',
+        description: 'Logs a scheduled takedown action for an account.',
+        properties: {
+          comment: {
+            type: 'string',
+          },
+          executeAt: {
+            type: 'string',
+            format: 'datetime',
+          },
+          executeAfter: {
+            type: 'string',
+            format: 'datetime',
+          },
+          executeUntil: {
+            type: 'string',
+            format: 'datetime',
+          },
+        },
+      },
+      cancelScheduledTakedownEvent: {
+        type: 'object',
+        description:
+          'Logs cancellation of a scheduled takedown action for an account.',
+        properties: {
+          comment: {
+            type: 'string',
           },
         },
       },
@@ -15195,6 +17359,88 @@ export const schemaDict = {
         description:
           'Moderation event timeline event for a PLC tombstone operation',
       },
+      scheduledActionView: {
+        type: 'object',
+        description: 'View of a scheduled moderation action',
+        required: ['id', 'action', 'did', 'createdBy', 'createdAt', 'status'],
+        properties: {
+          id: {
+            type: 'integer',
+            description: 'Auto-incrementing row ID',
+          },
+          action: {
+            type: 'string',
+            knownValues: ['takedown'],
+            description: 'Type of action to be executed',
+          },
+          eventData: {
+            type: 'unknown',
+            description:
+              'Serialized event object that will be propagated to the event when performed',
+          },
+          did: {
+            type: 'string',
+            format: 'did',
+            description: 'Subject DID for the action',
+          },
+          executeAt: {
+            type: 'string',
+            format: 'datetime',
+            description: 'Exact time to execute the action',
+          },
+          executeAfter: {
+            type: 'string',
+            format: 'datetime',
+            description:
+              'Earliest time to execute the action (for randomized scheduling)',
+          },
+          executeUntil: {
+            type: 'string',
+            format: 'datetime',
+            description:
+              'Latest time to execute the action (for randomized scheduling)',
+          },
+          randomizeExecution: {
+            type: 'boolean',
+            description:
+              'Whether execution time should be randomized within the specified range',
+          },
+          createdBy: {
+            type: 'string',
+            format: 'did',
+            description: 'DID of the user who created this scheduled action',
+          },
+          createdAt: {
+            type: 'string',
+            format: 'datetime',
+            description: 'When the scheduled action was created',
+          },
+          updatedAt: {
+            type: 'string',
+            format: 'datetime',
+            description: 'When the scheduled action was last updated',
+          },
+          status: {
+            type: 'string',
+            knownValues: ['pending', 'executed', 'cancelled', 'failed'],
+            description: 'Current status of the scheduled action',
+          },
+          lastExecutedAt: {
+            type: 'string',
+            format: 'datetime',
+            description: 'When the action was last attempted to be executed',
+          },
+          lastFailureReason: {
+            type: 'string',
+            description: 'Reason for the last execution failure',
+          },
+          executionEventId: {
+            type: 'integer',
+            description:
+              'ID of the moderation event created when action was successfully executed',
+          },
+        },
+      },
     },
   },
   ToolsOzoneModerationEmitEvent: {
@@ -15234,6 +17480,10 @@ export const schemaDict = {
                   'lex:tools.ozone.moderation.defs#modEventPriorityScore',
                   'lex:tools.ozone.moderation.defs#ageAssuranceEvent',
                   'lex:tools.ozone.moderation.defs#ageAssuranceOverrideEvent',
+                  'lex:tools.ozone.moderation.defs#ageAssurancePurgeEvent',
+                  'lex:tools.ozone.moderation.defs#revokeAccountCredentialsEvent',
+                  'lex:tools.ozone.moderation.defs#scheduleTakedownEvent',
+                  'lex:tools.ozone.moderation.defs#cancelScheduledTakedownEvent',
                 ],
               },
               subject: {
@@ -15372,6 +17622,7 @@ export const schemaDict = {
               'tools.ozone.moderation.defs#identityEvent',
               'tools.ozone.moderation.defs#recordEvent',
               'tools.ozone.moderation.defs#modEventPriorityScore',
+              'tools.ozone.moderation.defs#revokeAccountCredentialsEvent',
               'tools.ozone.moderation.defs#ageAssuranceEvent',
               'tools.ozone.moderation.defs#ageAssuranceOverrideEvent',
               'tools.ozone.moderation.defs#timelineEventPlcCreate',
@@ -15381,6 +17632,8 @@ export const schemaDict = {
               'tools.ozone.hosting.getAccountHistory#emailConfirmed',
               'tools.ozone.hosting.getAccountHistory#passwordUpdated',
               'tools.ozone.hosting.getAccountHistory#handleUpdated',
+              'tools.ozone.moderation.defs#scheduleTakedownEvent',
+              'tools.ozone.moderation.defs#cancelScheduledTakedownEvent',
             ],
           },
           count: {
@@ -15650,6 +17903,87 @@ export const schemaDict = {
       },
     },
   },
+  ToolsOzoneModerationListScheduledActions: {
+    lexicon: 1,
+    id: 'tools.ozone.moderation.listScheduledActions',
+    defs: {
+      main: {
+        type: 'procedure',
+        description:
+          'List scheduled moderation actions with optional filtering',
+        input: {
+          encoding: 'application/json',
+          schema: {
+            type: 'object',
+            required: ['statuses'],
+            properties: {
+              startsAfter: {
+                type: 'string',
+                format: 'datetime',
+                description:
+                  'Filter actions scheduled to execute after this time',
+              },
+              endsBefore: {
+                type: 'string',
+                format: 'datetime',
+                description:
+                  'Filter actions scheduled to execute before this time',
+              },
+              subjects: {
+                type: 'array',
+                maxLength: 100,
+                items: {
+                  type: 'string',
+                  format: 'did',
+                },
+                description: 'Filter actions for specific DID subjects',
+              },
+              statuses: {
+                type: 'array',
+                minLength: 1,
+                items: {
+                  type: 'string',
+                  knownValues: ['pending', 'executed', 'cancelled', 'failed'],
+                },
+                description: 'Filter actions by status',
+              },
+              limit: {
+                type: 'integer',
+                minimum: 1,
+                maximum: 100,
+                default: 50,
+                description: 'Maximum number of results to return',
+              },
+              cursor: {
+                type: 'string',
+                description: 'Cursor for pagination',
+              },
+            },
+          },
+        },
+        output: {
+          encoding: 'application/json',
+          schema: {
+            type: 'object',
+            required: ['actions'],
+            properties: {
+              actions: {
+                type: 'array',
+                items: {
+                  type: 'ref',
+                  ref: 'lex:tools.ozone.moderation.defs#scheduledActionView',
+                },
+              },
+              cursor: {
+                type: 'string',
+                description: 'Cursor for next page of results',
+              },
+            },
+          },
+        },
+      },
+    },
+  },
   ToolsOzoneModerationQueryEvents: {
     lexicon: 1,
     id: 'tools.ozone.moderation.queryEvents',
@@ -15801,6 +18135,11 @@ export const schemaDict = {
                 'blocked',
               ],
             },
+            withStrike: {
+              type: 'boolean',
+              description:
+                'If specified, only events where strikeCount value is set are returned.',
+            },
             cursor: {
               type: 'string',
             },
@@ -15931,6 +18270,12 @@ export const schemaDict = {
             reviewState: {
               type: 'string',
               description: 'Specify when fetching subjects in a certain state',
+              knownValues: [
+                'tools.ozone.moderation.defs#reviewOpen',
+                'tools.ozone.moderation.defs#reviewClosed',
+                'tools.ozone.moderation.defs#reviewEscalated',
+                'tools.ozone.moderation.defs#reviewNone',
+              ],
             },
             ignoreSubjects: {
               type: 'array',
@@ -16031,6 +18376,12 @@ export const schemaDict = {
               description:
                 'If specified, only subjects that have priority score value above the given value will be returned.',
             },
+            minStrikeCount: {
+              type: 'integer',
+              minimum: 1,
+              description:
+                'If specified, only subjects that belong to an account that has at least this many active strikes will be returned.',
+            },
             ageAssuranceState: {
               type: 'string',
               description:
@@ -16062,6 +18413,172 @@ export const schemaDict = {
                 },
               },
             },
+          },
+        },
+      },
+    },
+  },
+  ToolsOzoneModerationScheduleAction: {
+    lexicon: 1,
+    id: 'tools.ozone.moderation.scheduleAction',
+    defs: {
+      main: {
+        type: 'procedure',
+        description:
+          'Schedule a moderation action to be executed at a future time',
+        input: {
+          encoding: 'application/json',
+          schema: {
+            type: 'object',
+            required: ['action', 'subjects', 'createdBy', 'scheduling'],
+            properties: {
+              action: {
+                type: 'union',
+                refs: ['lex:tools.ozone.moderation.scheduleAction#takedown'],
+              },
+              subjects: {
+                type: 'array',
+                maxLength: 100,
+                items: {
+                  type: 'string',
+                  format: 'did',
+                },
+                description: 'Array of DID subjects to schedule the action for',
+              },
+              createdBy: {
+                type: 'string',
+                format: 'did',
+              },
+              scheduling: {
+                type: 'ref',
+                ref: 'lex:tools.ozone.moderation.scheduleAction#schedulingConfig',
+              },
+              modTool: {
+                type: 'ref',
+                ref: 'lex:tools.ozone.moderation.defs#modTool',
+                description:
+                  'This will be propagated to the moderation event when it is applied',
+              },
+            },
+          },
+        },
+        output: {
+          encoding: 'application/json',
+          schema: {
+            type: 'ref',
+            ref: 'lex:tools.ozone.moderation.scheduleAction#scheduledActionResults',
+          },
+        },
+      },
+      takedown: {
+        type: 'object',
+        description: 'Schedule a takedown action',
+        properties: {
+          comment: {
+            type: 'string',
+          },
+          durationInHours: {
+            type: 'integer',
+            description:
+              'Indicates how long the takedown should be in effect before automatically expiring.',
+          },
+          acknowledgeAccountSubjects: {
+            type: 'boolean',
+            description:
+              'If true, all other reports on content authored by this account will be resolved (acknowledged).',
+          },
+          policies: {
+            type: 'array',
+            maxLength: 5,
+            items: {
+              type: 'string',
+            },
+            description:
+              'Names/Keywords of the policies that drove the decision.',
+          },
+          severityLevel: {
+            type: 'string',
+            description:
+              "Severity level of the violation (e.g., 'sev-0', 'sev-1', 'sev-2', etc.).",
+          },
+          strikeCount: {
+            type: 'integer',
+            description:
+              'Number of strikes to assign to the user when takedown is applied.',
+          },
+          strikeExpiresAt: {
+            type: 'string',
+            format: 'datetime',
+            description:
+              'When the strike should expire. If not provided, the strike never expires.',
+          },
+          emailContent: {
+            type: 'string',
+            description: 'Email content to be sent to the user upon takedown.',
+          },
+          emailSubject: {
+            type: 'string',
+            description:
+              'Subject of the email to be sent to the user upon takedown.',
+          },
+        },
+      },
+      schedulingConfig: {
+        type: 'object',
+        description: 'Configuration for when the action should be executed',
+        properties: {
+          executeAt: {
+            type: 'string',
+            format: 'datetime',
+            description: 'Exact time to execute the action',
+          },
+          executeAfter: {
+            type: 'string',
+            format: 'datetime',
+            description:
+              'Earliest time to execute the action (for randomized scheduling)',
+          },
+          executeUntil: {
+            type: 'string',
+            format: 'datetime',
+            description:
+              'Latest time to execute the action (for randomized scheduling)',
+          },
+        },
+      },
+      scheduledActionResults: {
+        type: 'object',
+        required: ['succeeded', 'failed'],
+        properties: {
+          succeeded: {
+            type: 'array',
+            items: {
+              type: 'string',
+              format: 'did',
+            },
+          },
+          failed: {
+            type: 'array',
+            items: {
+              type: 'ref',
+              ref: 'lex:tools.ozone.moderation.scheduleAction#failedScheduling',
+            },
+          },
+        },
+      },
+      failedScheduling: {
+        type: 'object',
+        required: ['subject', 'error'],
+        properties: {
+          subject: {
+            type: 'string',
+            format: 'did',
+          },
+          error: {
+            type: 'string',
+          },
+          errorCode: {
+            type: 'string',
           },
         },
       },
@@ -16114,6 +18631,221 @@ export const schemaDict = {
             },
           },
         },
+      },
+    },
+  },
+  ToolsOzoneReportDefs: {
+    lexicon: 1,
+    id: 'tools.ozone.report.defs',
+    defs: {
+      reasonType: {
+        type: 'string',
+        knownValues: [
+          'tools.ozone.report.defs#reasonAppeal',
+          'tools.ozone.report.defs#reasonOther',
+          'tools.ozone.report.defs#reasonViolenceAnimal',
+          'tools.ozone.report.defs#reasonViolenceThreats',
+          'tools.ozone.report.defs#reasonViolenceGraphicContent',
+          'tools.ozone.report.defs#reasonViolenceGlorification',
+          'tools.ozone.report.defs#reasonViolenceExtremistContent',
+          'tools.ozone.report.defs#reasonViolenceTrafficking',
+          'tools.ozone.report.defs#reasonViolenceOther',
+          'tools.ozone.report.defs#reasonSexualAbuseContent',
+          'tools.ozone.report.defs#reasonSexualNCII',
+          'tools.ozone.report.defs#reasonSexualDeepfake',
+          'tools.ozone.report.defs#reasonSexualAnimal',
+          'tools.ozone.report.defs#reasonSexualUnlabeled',
+          'tools.ozone.report.defs#reasonSexualOther',
+          'tools.ozone.report.defs#reasonChildSafetyCSAM',
+          'tools.ozone.report.defs#reasonChildSafetyGroom',
+          'tools.ozone.report.defs#reasonChildSafetyPrivacy',
+          'tools.ozone.report.defs#reasonChildSafetyHarassment',
+          'tools.ozone.report.defs#reasonChildSafetyOther',
+          'tools.ozone.report.defs#reasonHarassmentTroll',
+          'tools.ozone.report.defs#reasonHarassmentTargeted',
+          'tools.ozone.report.defs#reasonHarassmentHateSpeech',
+          'tools.ozone.report.defs#reasonHarassmentDoxxing',
+          'tools.ozone.report.defs#reasonHarassmentOther',
+          'tools.ozone.report.defs#reasonMisleadingBot',
+          'tools.ozone.report.defs#reasonMisleadingImpersonation',
+          'tools.ozone.report.defs#reasonMisleadingSpam',
+          'tools.ozone.report.defs#reasonMisleadingScam',
+          'tools.ozone.report.defs#reasonMisleadingElections',
+          'tools.ozone.report.defs#reasonMisleadingOther',
+          'tools.ozone.report.defs#reasonRuleSiteSecurity',
+          'tools.ozone.report.defs#reasonRuleProhibitedSales',
+          'tools.ozone.report.defs#reasonRuleBanEvasion',
+          'tools.ozone.report.defs#reasonRuleOther',
+          'tools.ozone.report.defs#reasonSelfHarmContent',
+          'tools.ozone.report.defs#reasonSelfHarmED',
+          'tools.ozone.report.defs#reasonSelfHarmStunts',
+          'tools.ozone.report.defs#reasonSelfHarmSubstances',
+          'tools.ozone.report.defs#reasonSelfHarmOther',
+        ],
+      },
+      reasonAppeal: {
+        type: 'token',
+        description: 'Appeal a previously taken moderation action',
+      },
+      reasonOther: {
+        type: 'token',
+        description: 'An issue not included in these options',
+      },
+      reasonViolenceAnimal: {
+        type: 'token',
+        description: 'Animal welfare violations',
+      },
+      reasonViolenceThreats: {
+        type: 'token',
+        description: 'Threats or incitement',
+      },
+      reasonViolenceGraphicContent: {
+        type: 'token',
+        description: 'Graphic violent content',
+      },
+      reasonViolenceGlorification: {
+        type: 'token',
+        description: 'Glorification of violence',
+      },
+      reasonViolenceExtremistContent: {
+        type: 'token',
+        description:
+          "Extremist content. These reports will be sent only be sent to the application's Moderation Authority.",
+      },
+      reasonViolenceTrafficking: {
+        type: 'token',
+        description: 'Human trafficking',
+      },
+      reasonViolenceOther: {
+        type: 'token',
+        description: 'Other violent content',
+      },
+      reasonSexualAbuseContent: {
+        type: 'token',
+        description: 'Adult sexual abuse content',
+      },
+      reasonSexualNCII: {
+        type: 'token',
+        description: 'Non-consensual intimate imagery',
+      },
+      reasonSexualDeepfake: {
+        type: 'token',
+        description: 'Deepfake adult content',
+      },
+      reasonSexualAnimal: {
+        type: 'token',
+        description: 'Animal sexual abuse',
+      },
+      reasonSexualUnlabeled: {
+        type: 'token',
+        description: 'Unlabelled adult content',
+      },
+      reasonSexualOther: {
+        type: 'token',
+        description: 'Other sexual violence content',
+      },
+      reasonChildSafetyCSAM: {
+        type: 'token',
+        description:
+          "Child sexual abuse material (CSAM). These reports will be sent only be sent to the application's Moderation Authority.",
+      },
+      reasonChildSafetyGroom: {
+        type: 'token',
+        description:
+          "Grooming or predatory behavior. These reports will be sent only be sent to the application's Moderation Authority.",
+      },
+      reasonChildSafetyPrivacy: {
+        type: 'token',
+        description: 'Privacy violation involving a minor',
+      },
+      reasonChildSafetyHarassment: {
+        type: 'token',
+        description: 'Harassment or bullying of minors',
+      },
+      reasonChildSafetyOther: {
+        type: 'token',
+        description:
+          "Other child safety. These reports will be sent only be sent to the application's Moderation Authority.",
+      },
+      reasonHarassmentTroll: {
+        type: 'token',
+        description: 'Trolling',
+      },
+      reasonHarassmentTargeted: {
+        type: 'token',
+        description: 'Targeted harassment',
+      },
+      reasonHarassmentHateSpeech: {
+        type: 'token',
+        description: 'Hate speech',
+      },
+      reasonHarassmentDoxxing: {
+        type: 'token',
+        description: 'Doxxing',
+      },
+      reasonHarassmentOther: {
+        type: 'token',
+        description: 'Other harassing or hateful content',
+      },
+      reasonMisleadingBot: {
+        type: 'token',
+        description: 'Fake account or bot',
+      },
+      reasonMisleadingImpersonation: {
+        type: 'token',
+        description: 'Impersonation',
+      },
+      reasonMisleadingSpam: {
+        type: 'token',
+        description: 'Spam',
+      },
+      reasonMisleadingScam: {
+        type: 'token',
+        description: 'Scam',
+      },
+      reasonMisleadingElections: {
+        type: 'token',
+        description: 'False information about elections',
+      },
+      reasonMisleadingOther: {
+        type: 'token',
+        description: 'Other misleading content',
+      },
+      reasonRuleSiteSecurity: {
+        type: 'token',
+        description: 'Hacking or system attacks',
+      },
+      reasonRuleProhibitedSales: {
+        type: 'token',
+        description: 'Promoting or selling prohibited items or services',
+      },
+      reasonRuleBanEvasion: {
+        type: 'token',
+        description: 'Banned user returning',
+      },
+      reasonRuleOther: {
+        type: 'token',
+        description: 'Other',
+      },
+      reasonSelfHarmContent: {
+        type: 'token',
+        description: 'Content promoting or depicting self-harm',
+      },
+      reasonSelfHarmED: {
+        type: 'token',
+        description: 'Eating disorders',
+      },
+      reasonSelfHarmStunts: {
+        type: 'token',
+        description: 'Dangerous challenges or activities',
+      },
+      reasonSelfHarmSubstances: {
+        type: 'token',
+        description: 'Dangerous substances or drug abuse',
+      },
+      reasonSelfHarmOther: {
+        type: 'token',
+        description: 'Other dangerous content',
       },
     },
   },
@@ -17396,10 +20128,10 @@ export const schemaDict = {
           role: {
             type: 'string',
             knownValues: [
-              'lex:tools.ozone.team.defs#roleAdmin',
-              'lex:tools.ozone.team.defs#roleModerator',
-              'lex:tools.ozone.team.defs#roleTriage',
-              'lex:tools.ozone.team.defs#roleVerifier',
+              'tools.ozone.team.defs#roleAdmin',
+              'tools.ozone.team.defs#roleModerator',
+              'tools.ozone.team.defs#roleTriage',
+              'tools.ozone.team.defs#roleVerifier',
             ],
           },
         },
@@ -17955,6 +20687,29 @@ export const ids = {
   AppBskyActorSearchActors: 'app.bsky.actor.searchActors',
   AppBskyActorSearchActorsTypeahead: 'app.bsky.actor.searchActorsTypeahead',
   AppBskyActorStatus: 'app.bsky.actor.status',
+  AppBskyAgeassuranceBegin: 'app.bsky.ageassurance.begin',
+  AppBskyAgeassuranceDefs: 'app.bsky.ageassurance.defs',
+  AppBskyAgeassuranceGetConfig: 'app.bsky.ageassurance.getConfig',
+  AppBskyAgeassuranceGetState: 'app.bsky.ageassurance.getState',
+  AppBskyBookmarkCreateBookmark: 'app.bsky.bookmark.createBookmark',
+  AppBskyBookmarkDefs: 'app.bsky.bookmark.defs',
+  AppBskyBookmarkDeleteBookmark: 'app.bsky.bookmark.deleteBookmark',
+  AppBskyBookmarkGetBookmarks: 'app.bsky.bookmark.getBookmarks',
+  AppBskyContactDefs: 'app.bsky.contact.defs',
+  AppBskyContactDismissMatch: 'app.bsky.contact.dismissMatch',
+  AppBskyContactGetMatches: 'app.bsky.contact.getMatches',
+  AppBskyContactGetSyncStatus: 'app.bsky.contact.getSyncStatus',
+  AppBskyContactImportContacts: 'app.bsky.contact.importContacts',
+  AppBskyContactRemoveData: 'app.bsky.contact.removeData',
+  AppBskyContactSendNotification: 'app.bsky.contact.sendNotification',
+  AppBskyContactStartPhoneVerification:
+    'app.bsky.contact.startPhoneVerification',
+  AppBskyContactVerifyPhone: 'app.bsky.contact.verifyPhone',
+  AppBskyDraftCreateDraft: 'app.bsky.draft.createDraft',
+  AppBskyDraftDefs: 'app.bsky.draft.defs',
+  AppBskyDraftDeleteDraft: 'app.bsky.draft.deleteDraft',
+  AppBskyDraftGetDrafts: 'app.bsky.draft.getDrafts',
+  AppBskyDraftUpdateDraft: 'app.bsky.draft.updateDraft',
   AppBskyEmbedDefs: 'app.bsky.embed.defs',
   AppBskyEmbedExternal: 'app.bsky.embed.external',
   AppBskyEmbedImages: 'app.bsky.embed.images',
@@ -18042,6 +20797,12 @@ export const ids = {
   AppBskyUnspeccedGetAgeAssuranceState:
     'app.bsky.unspecced.getAgeAssuranceState',
   AppBskyUnspeccedGetConfig: 'app.bsky.unspecced.getConfig',
+  AppBskyUnspeccedGetOnboardingSuggestedStarterPacks:
+    'app.bsky.unspecced.getOnboardingSuggestedStarterPacks',
+  AppBskyUnspeccedGetOnboardingSuggestedStarterPacksSkeleton:
+    'app.bsky.unspecced.getOnboardingSuggestedStarterPacksSkeleton',
+  AppBskyUnspeccedGetOnboardingSuggestedUsersSkeleton:
+    'app.bsky.unspecced.getOnboardingSuggestedUsersSkeleton',
   AppBskyUnspeccedGetPopularFeedGenerators:
     'app.bsky.unspecced.getPopularFeedGenerators',
   AppBskyUnspeccedGetPostThreadOtherV2:
@@ -18050,6 +20811,8 @@ export const ids = {
   AppBskyUnspeccedGetSuggestedFeeds: 'app.bsky.unspecced.getSuggestedFeeds',
   AppBskyUnspeccedGetSuggestedFeedsSkeleton:
     'app.bsky.unspecced.getSuggestedFeedsSkeleton',
+  AppBskyUnspeccedGetSuggestedOnboardingUsers:
+    'app.bsky.unspecced.getSuggestedOnboardingUsers',
   AppBskyUnspeccedGetSuggestedStarterPacks:
     'app.bsky.unspecced.getSuggestedStarterPacks',
   AppBskyUnspeccedGetSuggestedStarterPacksSkeleton:
@@ -18134,6 +20897,7 @@ export const ids = {
   ComAtprotoLabelDefs: 'com.atproto.label.defs',
   ComAtprotoLabelQueryLabels: 'com.atproto.label.queryLabels',
   ComAtprotoLabelSubscribeLabels: 'com.atproto.label.subscribeLabels',
+  ComAtprotoLexiconResolveLexicon: 'com.atproto.lexicon.resolveLexicon',
   ComAtprotoLexiconSchema: 'com.atproto.lexicon.schema',
   ComAtprotoModerationCreateReport: 'com.atproto.moderation.createReport',
   ComAtprotoModerationDefs: 'com.atproto.moderation.defs',
@@ -18200,6 +20964,7 @@ export const ids = {
   ComAtprotoTempCheckHandleAvailability:
     'com.atproto.temp.checkHandleAvailability',
   ComAtprotoTempCheckSignupQueue: 'com.atproto.temp.checkSignupQueue',
+  ComAtprotoTempDereferenceScope: 'com.atproto.temp.dereferenceScope',
   ComAtprotoTempFetchLabels: 'com.atproto.temp.fetchLabels',
   ComAtprotoTempRequestPhoneVerification:
     'com.atproto.temp.requestPhoneVerification',
@@ -18215,6 +20980,8 @@ export const ids = {
   ToolsOzoneCommunicationUpdateTemplate:
     'tools.ozone.communication.updateTemplate',
   ToolsOzoneHostingGetAccountHistory: 'tools.ozone.hosting.getAccountHistory',
+  ToolsOzoneModerationCancelScheduledActions:
+    'tools.ozone.moderation.cancelScheduledActions',
   ToolsOzoneModerationDefs: 'tools.ozone.moderation.defs',
   ToolsOzoneModerationEmitEvent: 'tools.ozone.moderation.emitEvent',
   ToolsOzoneModerationGetAccountTimeline:
@@ -18227,9 +20994,13 @@ export const ids = {
     'tools.ozone.moderation.getReporterStats',
   ToolsOzoneModerationGetRepos: 'tools.ozone.moderation.getRepos',
   ToolsOzoneModerationGetSubjects: 'tools.ozone.moderation.getSubjects',
+  ToolsOzoneModerationListScheduledActions:
+    'tools.ozone.moderation.listScheduledActions',
   ToolsOzoneModerationQueryEvents: 'tools.ozone.moderation.queryEvents',
   ToolsOzoneModerationQueryStatuses: 'tools.ozone.moderation.queryStatuses',
+  ToolsOzoneModerationScheduleAction: 'tools.ozone.moderation.scheduleAction',
   ToolsOzoneModerationSearchRepos: 'tools.ozone.moderation.searchRepos',
+  ToolsOzoneReportDefs: 'tools.ozone.report.defs',
   ToolsOzoneSafelinkAddRule: 'tools.ozone.safelink.addRule',
   ToolsOzoneSafelinkDefs: 'tools.ozone.safelink.defs',
   ToolsOzoneSafelinkQueryEvents: 'tools.ozone.safelink.queryEvents',

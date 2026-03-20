@@ -19,6 +19,28 @@ import * as AppBskyActorPutPreferences from './types/app/bsky/actor/putPreferenc
 import * as AppBskyActorSearchActors from './types/app/bsky/actor/searchActors.js'
 import * as AppBskyActorSearchActorsTypeahead from './types/app/bsky/actor/searchActorsTypeahead.js'
 import * as AppBskyActorStatus from './types/app/bsky/actor/status.js'
+import * as AppBskyAgeassuranceBegin from './types/app/bsky/ageassurance/begin.js'
+import * as AppBskyAgeassuranceDefs from './types/app/bsky/ageassurance/defs.js'
+import * as AppBskyAgeassuranceGetConfig from './types/app/bsky/ageassurance/getConfig.js'
+import * as AppBskyAgeassuranceGetState from './types/app/bsky/ageassurance/getState.js'
+import * as AppBskyBookmarkCreateBookmark from './types/app/bsky/bookmark/createBookmark.js'
+import * as AppBskyBookmarkDefs from './types/app/bsky/bookmark/defs.js'
+import * as AppBskyBookmarkDeleteBookmark from './types/app/bsky/bookmark/deleteBookmark.js'
+import * as AppBskyBookmarkGetBookmarks from './types/app/bsky/bookmark/getBookmarks.js'
+import * as AppBskyContactDefs from './types/app/bsky/contact/defs.js'
+import * as AppBskyContactDismissMatch from './types/app/bsky/contact/dismissMatch.js'
+import * as AppBskyContactGetMatches from './types/app/bsky/contact/getMatches.js'
+import * as AppBskyContactGetSyncStatus from './types/app/bsky/contact/getSyncStatus.js'
+import * as AppBskyContactImportContacts from './types/app/bsky/contact/importContacts.js'
+import * as AppBskyContactRemoveData from './types/app/bsky/contact/removeData.js'
+import * as AppBskyContactSendNotification from './types/app/bsky/contact/sendNotification.js'
+import * as AppBskyContactStartPhoneVerification from './types/app/bsky/contact/startPhoneVerification.js'
+import * as AppBskyContactVerifyPhone from './types/app/bsky/contact/verifyPhone.js'
+import * as AppBskyDraftCreateDraft from './types/app/bsky/draft/createDraft.js'
+import * as AppBskyDraftDefs from './types/app/bsky/draft/defs.js'
+import * as AppBskyDraftDeleteDraft from './types/app/bsky/draft/deleteDraft.js'
+import * as AppBskyDraftGetDrafts from './types/app/bsky/draft/getDrafts.js'
+import * as AppBskyDraftUpdateDraft from './types/app/bsky/draft/updateDraft.js'
 import * as AppBskyEmbedDefs from './types/app/bsky/embed/defs.js'
 import * as AppBskyEmbedExternal from './types/app/bsky/embed/external.js'
 import * as AppBskyEmbedImages from './types/app/bsky/embed/images.js'
@@ -100,11 +122,15 @@ import * as AppBskyRichtextFacet from './types/app/bsky/richtext/facet.js'
 import * as AppBskyUnspeccedDefs from './types/app/bsky/unspecced/defs.js'
 import * as AppBskyUnspeccedGetAgeAssuranceState from './types/app/bsky/unspecced/getAgeAssuranceState.js'
 import * as AppBskyUnspeccedGetConfig from './types/app/bsky/unspecced/getConfig.js'
+import * as AppBskyUnspeccedGetOnboardingSuggestedStarterPacks from './types/app/bsky/unspecced/getOnboardingSuggestedStarterPacks.js'
+import * as AppBskyUnspeccedGetOnboardingSuggestedStarterPacksSkeleton from './types/app/bsky/unspecced/getOnboardingSuggestedStarterPacksSkeleton.js'
+import * as AppBskyUnspeccedGetOnboardingSuggestedUsersSkeleton from './types/app/bsky/unspecced/getOnboardingSuggestedUsersSkeleton.js'
 import * as AppBskyUnspeccedGetPopularFeedGenerators from './types/app/bsky/unspecced/getPopularFeedGenerators.js'
 import * as AppBskyUnspeccedGetPostThreadOtherV2 from './types/app/bsky/unspecced/getPostThreadOtherV2.js'
 import * as AppBskyUnspeccedGetPostThreadV2 from './types/app/bsky/unspecced/getPostThreadV2.js'
 import * as AppBskyUnspeccedGetSuggestedFeeds from './types/app/bsky/unspecced/getSuggestedFeeds.js'
 import * as AppBskyUnspeccedGetSuggestedFeedsSkeleton from './types/app/bsky/unspecced/getSuggestedFeedsSkeleton.js'
+import * as AppBskyUnspeccedGetSuggestedOnboardingUsers from './types/app/bsky/unspecced/getSuggestedOnboardingUsers.js'
 import * as AppBskyUnspeccedGetSuggestedStarterPacks from './types/app/bsky/unspecced/getSuggestedStarterPacks.js'
 import * as AppBskyUnspeccedGetSuggestedStarterPacksSkeleton from './types/app/bsky/unspecced/getSuggestedStarterPacksSkeleton.js'
 import * as AppBskyUnspeccedGetSuggestedUsers from './types/app/bsky/unspecced/getSuggestedUsers.js'
@@ -176,6 +202,7 @@ import * as ComAtprotoIdentityUpdateHandle from './types/com/atproto/identity/up
 import * as ComAtprotoLabelDefs from './types/com/atproto/label/defs.js'
 import * as ComAtprotoLabelQueryLabels from './types/com/atproto/label/queryLabels.js'
 import * as ComAtprotoLabelSubscribeLabels from './types/com/atproto/label/subscribeLabels.js'
+import * as ComAtprotoLexiconResolveLexicon from './types/com/atproto/lexicon/resolveLexicon.js'
 import * as ComAtprotoLexiconSchema from './types/com/atproto/lexicon/schema.js'
 import * as ComAtprotoModerationCreateReport from './types/com/atproto/moderation/createReport.js'
 import * as ComAtprotoModerationDefs from './types/com/atproto/moderation/defs.js'
@@ -237,15 +264,18 @@ import * as ComAtprotoSyncSubscribeRepos from './types/com/atproto/sync/subscrib
 import * as ComAtprotoTempAddReservedHandle from './types/com/atproto/temp/addReservedHandle.js'
 import * as ComAtprotoTempCheckHandleAvailability from './types/com/atproto/temp/checkHandleAvailability.js'
 import * as ComAtprotoTempCheckSignupQueue from './types/com/atproto/temp/checkSignupQueue.js'
+import * as ComAtprotoTempDereferenceScope from './types/com/atproto/temp/dereferenceScope.js'
 import * as ComAtprotoTempFetchLabels from './types/com/atproto/temp/fetchLabels.js'
 import * as ComAtprotoTempRequestPhoneVerification from './types/com/atproto/temp/requestPhoneVerification.js'
 import * as ComAtprotoTempRevokeAccountCredentials from './types/com/atproto/temp/revokeAccountCredentials.js'
+import * as ComGermnetworkDeclaration from './types/com/germnetwork/declaration.js'
 import * as ToolsOzoneCommunicationCreateTemplate from './types/tools/ozone/communication/createTemplate.js'
 import * as ToolsOzoneCommunicationDefs from './types/tools/ozone/communication/defs.js'
 import * as ToolsOzoneCommunicationDeleteTemplate from './types/tools/ozone/communication/deleteTemplate.js'
 import * as ToolsOzoneCommunicationListTemplates from './types/tools/ozone/communication/listTemplates.js'
 import * as ToolsOzoneCommunicationUpdateTemplate from './types/tools/ozone/communication/updateTemplate.js'
 import * as ToolsOzoneHostingGetAccountHistory from './types/tools/ozone/hosting/getAccountHistory.js'
+import * as ToolsOzoneModerationCancelScheduledActions from './types/tools/ozone/moderation/cancelScheduledActions.js'
 import * as ToolsOzoneModerationDefs from './types/tools/ozone/moderation/defs.js'
 import * as ToolsOzoneModerationEmitEvent from './types/tools/ozone/moderation/emitEvent.js'
 import * as ToolsOzoneModerationGetAccountTimeline from './types/tools/ozone/moderation/getAccountTimeline.js'
@@ -256,9 +286,12 @@ import * as ToolsOzoneModerationGetRepo from './types/tools/ozone/moderation/get
 import * as ToolsOzoneModerationGetReporterStats from './types/tools/ozone/moderation/getReporterStats.js'
 import * as ToolsOzoneModerationGetRepos from './types/tools/ozone/moderation/getRepos.js'
 import * as ToolsOzoneModerationGetSubjects from './types/tools/ozone/moderation/getSubjects.js'
+import * as ToolsOzoneModerationListScheduledActions from './types/tools/ozone/moderation/listScheduledActions.js'
 import * as ToolsOzoneModerationQueryEvents from './types/tools/ozone/moderation/queryEvents.js'
 import * as ToolsOzoneModerationQueryStatuses from './types/tools/ozone/moderation/queryStatuses.js'
+import * as ToolsOzoneModerationScheduleAction from './types/tools/ozone/moderation/scheduleAction.js'
 import * as ToolsOzoneModerationSearchRepos from './types/tools/ozone/moderation/searchRepos.js'
+import * as ToolsOzoneReportDefs from './types/tools/ozone/report/defs.js'
 import * as ToolsOzoneSafelinkAddRule from './types/tools/ozone/safelink/addRule.js'
 import * as ToolsOzoneSafelinkDefs from './types/tools/ozone/safelink/defs.js'
 import * as ToolsOzoneSafelinkQueryEvents from './types/tools/ozone/safelink/queryEvents.js'
@@ -301,6 +334,28 @@ export * as AppBskyActorPutPreferences from './types/app/bsky/actor/putPreferenc
 export * as AppBskyActorSearchActors from './types/app/bsky/actor/searchActors.js'
 export * as AppBskyActorSearchActorsTypeahead from './types/app/bsky/actor/searchActorsTypeahead.js'
 export * as AppBskyActorStatus from './types/app/bsky/actor/status.js'
+export * as AppBskyAgeassuranceBegin from './types/app/bsky/ageassurance/begin.js'
+export * as AppBskyAgeassuranceDefs from './types/app/bsky/ageassurance/defs.js'
+export * as AppBskyAgeassuranceGetConfig from './types/app/bsky/ageassurance/getConfig.js'
+export * as AppBskyAgeassuranceGetState from './types/app/bsky/ageassurance/getState.js'
+export * as AppBskyBookmarkCreateBookmark from './types/app/bsky/bookmark/createBookmark.js'
+export * as AppBskyBookmarkDefs from './types/app/bsky/bookmark/defs.js'
+export * as AppBskyBookmarkDeleteBookmark from './types/app/bsky/bookmark/deleteBookmark.js'
+export * as AppBskyBookmarkGetBookmarks from './types/app/bsky/bookmark/getBookmarks.js'
+export * as AppBskyContactDefs from './types/app/bsky/contact/defs.js'
+export * as AppBskyContactDismissMatch from './types/app/bsky/contact/dismissMatch.js'
+export * as AppBskyContactGetMatches from './types/app/bsky/contact/getMatches.js'
+export * as AppBskyContactGetSyncStatus from './types/app/bsky/contact/getSyncStatus.js'
+export * as AppBskyContactImportContacts from './types/app/bsky/contact/importContacts.js'
+export * as AppBskyContactRemoveData from './types/app/bsky/contact/removeData.js'
+export * as AppBskyContactSendNotification from './types/app/bsky/contact/sendNotification.js'
+export * as AppBskyContactStartPhoneVerification from './types/app/bsky/contact/startPhoneVerification.js'
+export * as AppBskyContactVerifyPhone from './types/app/bsky/contact/verifyPhone.js'
+export * as AppBskyDraftCreateDraft from './types/app/bsky/draft/createDraft.js'
+export * as AppBskyDraftDefs from './types/app/bsky/draft/defs.js'
+export * as AppBskyDraftDeleteDraft from './types/app/bsky/draft/deleteDraft.js'
+export * as AppBskyDraftGetDrafts from './types/app/bsky/draft/getDrafts.js'
+export * as AppBskyDraftUpdateDraft from './types/app/bsky/draft/updateDraft.js'
 export * as AppBskyEmbedDefs from './types/app/bsky/embed/defs.js'
 export * as AppBskyEmbedExternal from './types/app/bsky/embed/external.js'
 export * as AppBskyEmbedImages from './types/app/bsky/embed/images.js'
@@ -382,11 +437,15 @@ export * as AppBskyRichtextFacet from './types/app/bsky/richtext/facet.js'
 export * as AppBskyUnspeccedDefs from './types/app/bsky/unspecced/defs.js'
 export * as AppBskyUnspeccedGetAgeAssuranceState from './types/app/bsky/unspecced/getAgeAssuranceState.js'
 export * as AppBskyUnspeccedGetConfig from './types/app/bsky/unspecced/getConfig.js'
+export * as AppBskyUnspeccedGetOnboardingSuggestedStarterPacks from './types/app/bsky/unspecced/getOnboardingSuggestedStarterPacks.js'
+export * as AppBskyUnspeccedGetOnboardingSuggestedStarterPacksSkeleton from './types/app/bsky/unspecced/getOnboardingSuggestedStarterPacksSkeleton.js'
+export * as AppBskyUnspeccedGetOnboardingSuggestedUsersSkeleton from './types/app/bsky/unspecced/getOnboardingSuggestedUsersSkeleton.js'
 export * as AppBskyUnspeccedGetPopularFeedGenerators from './types/app/bsky/unspecced/getPopularFeedGenerators.js'
 export * as AppBskyUnspeccedGetPostThreadOtherV2 from './types/app/bsky/unspecced/getPostThreadOtherV2.js'
 export * as AppBskyUnspeccedGetPostThreadV2 from './types/app/bsky/unspecced/getPostThreadV2.js'
 export * as AppBskyUnspeccedGetSuggestedFeeds from './types/app/bsky/unspecced/getSuggestedFeeds.js'
 export * as AppBskyUnspeccedGetSuggestedFeedsSkeleton from './types/app/bsky/unspecced/getSuggestedFeedsSkeleton.js'
+export * as AppBskyUnspeccedGetSuggestedOnboardingUsers from './types/app/bsky/unspecced/getSuggestedOnboardingUsers.js'
 export * as AppBskyUnspeccedGetSuggestedStarterPacks from './types/app/bsky/unspecced/getSuggestedStarterPacks.js'
 export * as AppBskyUnspeccedGetSuggestedStarterPacksSkeleton from './types/app/bsky/unspecced/getSuggestedStarterPacksSkeleton.js'
 export * as AppBskyUnspeccedGetSuggestedUsers from './types/app/bsky/unspecced/getSuggestedUsers.js'
@@ -458,6 +517,7 @@ export * as ComAtprotoIdentityUpdateHandle from './types/com/atproto/identity/up
 export * as ComAtprotoLabelDefs from './types/com/atproto/label/defs.js'
 export * as ComAtprotoLabelQueryLabels from './types/com/atproto/label/queryLabels.js'
 export * as ComAtprotoLabelSubscribeLabels from './types/com/atproto/label/subscribeLabels.js'
+export * as ComAtprotoLexiconResolveLexicon from './types/com/atproto/lexicon/resolveLexicon.js'
 export * as ComAtprotoLexiconSchema from './types/com/atproto/lexicon/schema.js'
 export * as ComAtprotoModerationCreateReport from './types/com/atproto/moderation/createReport.js'
 export * as ComAtprotoModerationDefs from './types/com/atproto/moderation/defs.js'
@@ -519,15 +579,18 @@ export * as ComAtprotoSyncSubscribeRepos from './types/com/atproto/sync/subscrib
 export * as ComAtprotoTempAddReservedHandle from './types/com/atproto/temp/addReservedHandle.js'
 export * as ComAtprotoTempCheckHandleAvailability from './types/com/atproto/temp/checkHandleAvailability.js'
 export * as ComAtprotoTempCheckSignupQueue from './types/com/atproto/temp/checkSignupQueue.js'
+export * as ComAtprotoTempDereferenceScope from './types/com/atproto/temp/dereferenceScope.js'
 export * as ComAtprotoTempFetchLabels from './types/com/atproto/temp/fetchLabels.js'
 export * as ComAtprotoTempRequestPhoneVerification from './types/com/atproto/temp/requestPhoneVerification.js'
 export * as ComAtprotoTempRevokeAccountCredentials from './types/com/atproto/temp/revokeAccountCredentials.js'
+export * as ComGermnetworkDeclaration from './types/com/germnetwork/declaration.js'
 export * as ToolsOzoneCommunicationCreateTemplate from './types/tools/ozone/communication/createTemplate.js'
 export * as ToolsOzoneCommunicationDefs from './types/tools/ozone/communication/defs.js'
 export * as ToolsOzoneCommunicationDeleteTemplate from './types/tools/ozone/communication/deleteTemplate.js'
 export * as ToolsOzoneCommunicationListTemplates from './types/tools/ozone/communication/listTemplates.js'
 export * as ToolsOzoneCommunicationUpdateTemplate from './types/tools/ozone/communication/updateTemplate.js'
 export * as ToolsOzoneHostingGetAccountHistory from './types/tools/ozone/hosting/getAccountHistory.js'
+export * as ToolsOzoneModerationCancelScheduledActions from './types/tools/ozone/moderation/cancelScheduledActions.js'
 export * as ToolsOzoneModerationDefs from './types/tools/ozone/moderation/defs.js'
 export * as ToolsOzoneModerationEmitEvent from './types/tools/ozone/moderation/emitEvent.js'
 export * as ToolsOzoneModerationGetAccountTimeline from './types/tools/ozone/moderation/getAccountTimeline.js'
@@ -538,9 +601,12 @@ export * as ToolsOzoneModerationGetRepo from './types/tools/ozone/moderation/get
 export * as ToolsOzoneModerationGetReporterStats from './types/tools/ozone/moderation/getReporterStats.js'
 export * as ToolsOzoneModerationGetRepos from './types/tools/ozone/moderation/getRepos.js'
 export * as ToolsOzoneModerationGetSubjects from './types/tools/ozone/moderation/getSubjects.js'
+export * as ToolsOzoneModerationListScheduledActions from './types/tools/ozone/moderation/listScheduledActions.js'
 export * as ToolsOzoneModerationQueryEvents from './types/tools/ozone/moderation/queryEvents.js'
 export * as ToolsOzoneModerationQueryStatuses from './types/tools/ozone/moderation/queryStatuses.js'
+export * as ToolsOzoneModerationScheduleAction from './types/tools/ozone/moderation/scheduleAction.js'
 export * as ToolsOzoneModerationSearchRepos from './types/tools/ozone/moderation/searchRepos.js'
+export * as ToolsOzoneReportDefs from './types/tools/ozone/report/defs.js'
 export * as ToolsOzoneSafelinkAddRule from './types/tools/ozone/safelink/addRule.js'
 export * as ToolsOzoneSafelinkDefs from './types/tools/ozone/safelink/defs.js'
 export * as ToolsOzoneSafelinkQueryEvents from './types/tools/ozone/safelink/queryEvents.js'
@@ -618,6 +684,62 @@ export const TOOLS_OZONE_MODERATION = {
   DefsTimelineEventPlcTombstone:
     'tools.ozone.moderation.defs#timelineEventPlcTombstone',
 }
+export const TOOLS_OZONE_REPORT = {
+  DefsReasonAppeal: 'tools.ozone.report.defs#reasonAppeal',
+  DefsReasonOther: 'tools.ozone.report.defs#reasonOther',
+  DefsReasonViolenceAnimal: 'tools.ozone.report.defs#reasonViolenceAnimal',
+  DefsReasonViolenceThreats: 'tools.ozone.report.defs#reasonViolenceThreats',
+  DefsReasonViolenceGraphicContent:
+    'tools.ozone.report.defs#reasonViolenceGraphicContent',
+  DefsReasonViolenceGlorification:
+    'tools.ozone.report.defs#reasonViolenceGlorification',
+  DefsReasonViolenceExtremistContent:
+    'tools.ozone.report.defs#reasonViolenceExtremistContent',
+  DefsReasonViolenceTrafficking:
+    'tools.ozone.report.defs#reasonViolenceTrafficking',
+  DefsReasonViolenceOther: 'tools.ozone.report.defs#reasonViolenceOther',
+  DefsReasonSexualAbuseContent:
+    'tools.ozone.report.defs#reasonSexualAbuseContent',
+  DefsReasonSexualNCII: 'tools.ozone.report.defs#reasonSexualNCII',
+  DefsReasonSexualDeepfake: 'tools.ozone.report.defs#reasonSexualDeepfake',
+  DefsReasonSexualAnimal: 'tools.ozone.report.defs#reasonSexualAnimal',
+  DefsReasonSexualUnlabeled: 'tools.ozone.report.defs#reasonSexualUnlabeled',
+  DefsReasonSexualOther: 'tools.ozone.report.defs#reasonSexualOther',
+  DefsReasonChildSafetyCSAM: 'tools.ozone.report.defs#reasonChildSafetyCSAM',
+  DefsReasonChildSafetyGroom: 'tools.ozone.report.defs#reasonChildSafetyGroom',
+  DefsReasonChildSafetyPrivacy:
+    'tools.ozone.report.defs#reasonChildSafetyPrivacy',
+  DefsReasonChildSafetyHarassment:
+    'tools.ozone.report.defs#reasonChildSafetyHarassment',
+  DefsReasonChildSafetyOther: 'tools.ozone.report.defs#reasonChildSafetyOther',
+  DefsReasonHarassmentTroll: 'tools.ozone.report.defs#reasonHarassmentTroll',
+  DefsReasonHarassmentTargeted:
+    'tools.ozone.report.defs#reasonHarassmentTargeted',
+  DefsReasonHarassmentHateSpeech:
+    'tools.ozone.report.defs#reasonHarassmentHateSpeech',
+  DefsReasonHarassmentDoxxing:
+    'tools.ozone.report.defs#reasonHarassmentDoxxing',
+  DefsReasonHarassmentOther: 'tools.ozone.report.defs#reasonHarassmentOther',
+  DefsReasonMisleadingBot: 'tools.ozone.report.defs#reasonMisleadingBot',
+  DefsReasonMisleadingImpersonation:
+    'tools.ozone.report.defs#reasonMisleadingImpersonation',
+  DefsReasonMisleadingSpam: 'tools.ozone.report.defs#reasonMisleadingSpam',
+  DefsReasonMisleadingScam: 'tools.ozone.report.defs#reasonMisleadingScam',
+  DefsReasonMisleadingElections:
+    'tools.ozone.report.defs#reasonMisleadingElections',
+  DefsReasonMisleadingOther: 'tools.ozone.report.defs#reasonMisleadingOther',
+  DefsReasonRuleSiteSecurity: 'tools.ozone.report.defs#reasonRuleSiteSecurity',
+  DefsReasonRuleProhibitedSales:
+    'tools.ozone.report.defs#reasonRuleProhibitedSales',
+  DefsReasonRuleBanEvasion: 'tools.ozone.report.defs#reasonRuleBanEvasion',
+  DefsReasonRuleOther: 'tools.ozone.report.defs#reasonRuleOther',
+  DefsReasonSelfHarmContent: 'tools.ozone.report.defs#reasonSelfHarmContent',
+  DefsReasonSelfHarmED: 'tools.ozone.report.defs#reasonSelfHarmED',
+  DefsReasonSelfHarmStunts: 'tools.ozone.report.defs#reasonSelfHarmStunts',
+  DefsReasonSelfHarmSubstances:
+    'tools.ozone.report.defs#reasonSelfHarmSubstances',
+  DefsReasonSelfHarmOther: 'tools.ozone.report.defs#reasonSelfHarmOther',
+}
 export const TOOLS_OZONE_TEAM = {
   DefsRoleAdmin: 'tools.ozone.team.defs#roleAdmin',
   DefsRoleModerator: 'tools.ozone.team.defs#roleModerator',
@@ -658,6 +780,10 @@ export class AppNS {
 export class AppBskyNS {
   _client: XrpcClient
   actor: AppBskyActorNS
+  ageassurance: AppBskyAgeassuranceNS
+  bookmark: AppBskyBookmarkNS
+  contact: AppBskyContactNS
+  draft: AppBskyDraftNS
   embed: AppBskyEmbedNS
   feed: AppBskyFeedNS
   graph: AppBskyGraphNS
@@ -670,6 +796,10 @@ export class AppBskyNS {
   constructor(client: XrpcClient) {
     this._client = client
     this.actor = new AppBskyActorNS(client)
+    this.ageassurance = new AppBskyAgeassuranceNS(client)
+    this.bookmark = new AppBskyBookmarkNS(client)
+    this.contact = new AppBskyContactNS(client)
+    this.draft = new AppBskyDraftNS(client)
     this.embed = new AppBskyEmbedNS(client)
     this.feed = new AppBskyFeedNS(client)
     this.graph = new AppBskyGraphNS(client)
@@ -942,6 +1072,233 @@ export class AppBskyActorStatusRecord {
       { collection: 'app.bsky.actor.status', ...params },
       { headers },
     )
+  }
+}
+
+export class AppBskyAgeassuranceNS {
+  _client: XrpcClient
+
+  constructor(client: XrpcClient) {
+    this._client = client
+  }
+
+  begin(
+    data?: AppBskyAgeassuranceBegin.InputSchema,
+    opts?: AppBskyAgeassuranceBegin.CallOptions,
+  ): Promise<AppBskyAgeassuranceBegin.Response> {
+    return this._client
+      .call('app.bsky.ageassurance.begin', opts?.qp, data, opts)
+      .catch((e) => {
+        throw AppBskyAgeassuranceBegin.toKnownErr(e)
+      })
+  }
+
+  getConfig(
+    params?: AppBskyAgeassuranceGetConfig.QueryParams,
+    opts?: AppBskyAgeassuranceGetConfig.CallOptions,
+  ): Promise<AppBskyAgeassuranceGetConfig.Response> {
+    return this._client.call(
+      'app.bsky.ageassurance.getConfig',
+      params,
+      undefined,
+      opts,
+    )
+  }
+
+  getState(
+    params?: AppBskyAgeassuranceGetState.QueryParams,
+    opts?: AppBskyAgeassuranceGetState.CallOptions,
+  ): Promise<AppBskyAgeassuranceGetState.Response> {
+    return this._client.call(
+      'app.bsky.ageassurance.getState',
+      params,
+      undefined,
+      opts,
+    )
+  }
+}
+
+export class AppBskyBookmarkNS {
+  _client: XrpcClient
+
+  constructor(client: XrpcClient) {
+    this._client = client
+  }
+
+  createBookmark(
+    data?: AppBskyBookmarkCreateBookmark.InputSchema,
+    opts?: AppBskyBookmarkCreateBookmark.CallOptions,
+  ): Promise<AppBskyBookmarkCreateBookmark.Response> {
+    return this._client
+      .call('app.bsky.bookmark.createBookmark', opts?.qp, data, opts)
+      .catch((e) => {
+        throw AppBskyBookmarkCreateBookmark.toKnownErr(e)
+      })
+  }
+
+  deleteBookmark(
+    data?: AppBskyBookmarkDeleteBookmark.InputSchema,
+    opts?: AppBskyBookmarkDeleteBookmark.CallOptions,
+  ): Promise<AppBskyBookmarkDeleteBookmark.Response> {
+    return this._client
+      .call('app.bsky.bookmark.deleteBookmark', opts?.qp, data, opts)
+      .catch((e) => {
+        throw AppBskyBookmarkDeleteBookmark.toKnownErr(e)
+      })
+  }
+
+  getBookmarks(
+    params?: AppBskyBookmarkGetBookmarks.QueryParams,
+    opts?: AppBskyBookmarkGetBookmarks.CallOptions,
+  ): Promise<AppBskyBookmarkGetBookmarks.Response> {
+    return this._client.call(
+      'app.bsky.bookmark.getBookmarks',
+      params,
+      undefined,
+      opts,
+    )
+  }
+}
+
+export class AppBskyContactNS {
+  _client: XrpcClient
+
+  constructor(client: XrpcClient) {
+    this._client = client
+  }
+
+  dismissMatch(
+    data?: AppBskyContactDismissMatch.InputSchema,
+    opts?: AppBskyContactDismissMatch.CallOptions,
+  ): Promise<AppBskyContactDismissMatch.Response> {
+    return this._client
+      .call('app.bsky.contact.dismissMatch', opts?.qp, data, opts)
+      .catch((e) => {
+        throw AppBskyContactDismissMatch.toKnownErr(e)
+      })
+  }
+
+  getMatches(
+    params?: AppBskyContactGetMatches.QueryParams,
+    opts?: AppBskyContactGetMatches.CallOptions,
+  ): Promise<AppBskyContactGetMatches.Response> {
+    return this._client
+      .call('app.bsky.contact.getMatches', params, undefined, opts)
+      .catch((e) => {
+        throw AppBskyContactGetMatches.toKnownErr(e)
+      })
+  }
+
+  getSyncStatus(
+    params?: AppBskyContactGetSyncStatus.QueryParams,
+    opts?: AppBskyContactGetSyncStatus.CallOptions,
+  ): Promise<AppBskyContactGetSyncStatus.Response> {
+    return this._client
+      .call('app.bsky.contact.getSyncStatus', params, undefined, opts)
+      .catch((e) => {
+        throw AppBskyContactGetSyncStatus.toKnownErr(e)
+      })
+  }
+
+  importContacts(
+    data?: AppBskyContactImportContacts.InputSchema,
+    opts?: AppBskyContactImportContacts.CallOptions,
+  ): Promise<AppBskyContactImportContacts.Response> {
+    return this._client
+      .call('app.bsky.contact.importContacts', opts?.qp, data, opts)
+      .catch((e) => {
+        throw AppBskyContactImportContacts.toKnownErr(e)
+      })
+  }
+
+  removeData(
+    data?: AppBskyContactRemoveData.InputSchema,
+    opts?: AppBskyContactRemoveData.CallOptions,
+  ): Promise<AppBskyContactRemoveData.Response> {
+    return this._client
+      .call('app.bsky.contact.removeData', opts?.qp, data, opts)
+      .catch((e) => {
+        throw AppBskyContactRemoveData.toKnownErr(e)
+      })
+  }
+
+  sendNotification(
+    data?: AppBskyContactSendNotification.InputSchema,
+    opts?: AppBskyContactSendNotification.CallOptions,
+  ): Promise<AppBskyContactSendNotification.Response> {
+    return this._client.call(
+      'app.bsky.contact.sendNotification',
+      opts?.qp,
+      data,
+      opts,
+    )
+  }
+
+  startPhoneVerification(
+    data?: AppBskyContactStartPhoneVerification.InputSchema,
+    opts?: AppBskyContactStartPhoneVerification.CallOptions,
+  ): Promise<AppBskyContactStartPhoneVerification.Response> {
+    return this._client
+      .call('app.bsky.contact.startPhoneVerification', opts?.qp, data, opts)
+      .catch((e) => {
+        throw AppBskyContactStartPhoneVerification.toKnownErr(e)
+      })
+  }
+
+  verifyPhone(
+    data?: AppBskyContactVerifyPhone.InputSchema,
+    opts?: AppBskyContactVerifyPhone.CallOptions,
+  ): Promise<AppBskyContactVerifyPhone.Response> {
+    return this._client
+      .call('app.bsky.contact.verifyPhone', opts?.qp, data, opts)
+      .catch((e) => {
+        throw AppBskyContactVerifyPhone.toKnownErr(e)
+      })
+  }
+}
+
+export class AppBskyDraftNS {
+  _client: XrpcClient
+
+  constructor(client: XrpcClient) {
+    this._client = client
+  }
+
+  createDraft(
+    data?: AppBskyDraftCreateDraft.InputSchema,
+    opts?: AppBskyDraftCreateDraft.CallOptions,
+  ): Promise<AppBskyDraftCreateDraft.Response> {
+    return this._client
+      .call('app.bsky.draft.createDraft', opts?.qp, data, opts)
+      .catch((e) => {
+        throw AppBskyDraftCreateDraft.toKnownErr(e)
+      })
+  }
+
+  deleteDraft(
+    data?: AppBskyDraftDeleteDraft.InputSchema,
+    opts?: AppBskyDraftDeleteDraft.CallOptions,
+  ): Promise<AppBskyDraftDeleteDraft.Response> {
+    return this._client.call('app.bsky.draft.deleteDraft', opts?.qp, data, opts)
+  }
+
+  getDrafts(
+    params?: AppBskyDraftGetDrafts.QueryParams,
+    opts?: AppBskyDraftGetDrafts.CallOptions,
+  ): Promise<AppBskyDraftGetDrafts.Response> {
+    return this._client.call(
+      'app.bsky.draft.getDrafts',
+      params,
+      undefined,
+      opts,
+    )
+  }
+
+  updateDraft(
+    data?: AppBskyDraftUpdateDraft.InputSchema,
+    opts?: AppBskyDraftUpdateDraft.CallOptions,
+  ): Promise<AppBskyDraftUpdateDraft.Response> {
+    return this._client.call('app.bsky.draft.updateDraft', opts?.qp, data, opts)
   }
 }
 
@@ -2844,6 +3201,42 @@ export class AppBskyUnspeccedNS {
     )
   }
 
+  getOnboardingSuggestedStarterPacks(
+    params?: AppBskyUnspeccedGetOnboardingSuggestedStarterPacks.QueryParams,
+    opts?: AppBskyUnspeccedGetOnboardingSuggestedStarterPacks.CallOptions,
+  ): Promise<AppBskyUnspeccedGetOnboardingSuggestedStarterPacks.Response> {
+    return this._client.call(
+      'app.bsky.unspecced.getOnboardingSuggestedStarterPacks',
+      params,
+      undefined,
+      opts,
+    )
+  }
+
+  getOnboardingSuggestedStarterPacksSkeleton(
+    params?: AppBskyUnspeccedGetOnboardingSuggestedStarterPacksSkeleton.QueryParams,
+    opts?: AppBskyUnspeccedGetOnboardingSuggestedStarterPacksSkeleton.CallOptions,
+  ): Promise<AppBskyUnspeccedGetOnboardingSuggestedStarterPacksSkeleton.Response> {
+    return this._client.call(
+      'app.bsky.unspecced.getOnboardingSuggestedStarterPacksSkeleton',
+      params,
+      undefined,
+      opts,
+    )
+  }
+
+  getOnboardingSuggestedUsersSkeleton(
+    params?: AppBskyUnspeccedGetOnboardingSuggestedUsersSkeleton.QueryParams,
+    opts?: AppBskyUnspeccedGetOnboardingSuggestedUsersSkeleton.CallOptions,
+  ): Promise<AppBskyUnspeccedGetOnboardingSuggestedUsersSkeleton.Response> {
+    return this._client.call(
+      'app.bsky.unspecced.getOnboardingSuggestedUsersSkeleton',
+      params,
+      undefined,
+      opts,
+    )
+  }
+
   getPopularFeedGenerators(
     params?: AppBskyUnspeccedGetPopularFeedGenerators.QueryParams,
     opts?: AppBskyUnspeccedGetPopularFeedGenerators.CallOptions,
@@ -2898,6 +3291,18 @@ export class AppBskyUnspeccedNS {
   ): Promise<AppBskyUnspeccedGetSuggestedFeedsSkeleton.Response> {
     return this._client.call(
       'app.bsky.unspecced.getSuggestedFeedsSkeleton',
+      params,
+      undefined,
+      opts,
+    )
+  }
+
+  getSuggestedOnboardingUsers(
+    params?: AppBskyUnspeccedGetSuggestedOnboardingUsers.QueryParams,
+    opts?: AppBskyUnspeccedGetSuggestedOnboardingUsers.CallOptions,
+  ): Promise<AppBskyUnspeccedGetSuggestedOnboardingUsers.Response> {
+    return this._client.call(
+      'app.bsky.unspecced.getSuggestedOnboardingUsers',
       params,
       undefined,
       opts,
@@ -3484,10 +3889,12 @@ export class ChatBskyModerationNS {
 export class ComNS {
   _client: XrpcClient
   atproto: ComAtprotoNS
+  germnetwork: ComGermnetworkNS
 
   constructor(client: XrpcClient) {
     this._client = client
     this.atproto = new ComAtprotoNS(client)
+    this.germnetwork = new ComGermnetworkNS(client)
   }
 }
 
@@ -3845,6 +4252,17 @@ export class ComAtprotoLexiconNS {
     this._client = client
     this.schema = new ComAtprotoLexiconSchemaRecord(client)
   }
+
+  resolveLexicon(
+    params?: ComAtprotoLexiconResolveLexicon.QueryParams,
+    opts?: ComAtprotoLexiconResolveLexicon.CallOptions,
+  ): Promise<ComAtprotoLexiconResolveLexicon.Response> {
+    return this._client
+      .call('com.atproto.lexicon.resolveLexicon', params, undefined, opts)
+      .catch((e) => {
+        throw ComAtprotoLexiconResolveLexicon.toKnownErr(e)
+      })
+  }
 }
 
 export class ComAtprotoLexiconSchemaRecord {
@@ -4199,12 +4617,11 @@ export class ComAtprotoServerNS {
     data?: ComAtprotoServerDeleteSession.InputSchema,
     opts?: ComAtprotoServerDeleteSession.CallOptions,
   ): Promise<ComAtprotoServerDeleteSession.Response> {
-    return this._client.call(
-      'com.atproto.server.deleteSession',
-      opts?.qp,
-      data,
-      opts,
-    )
+    return this._client
+      .call('com.atproto.server.deleteSession', opts?.qp, data, opts)
+      .catch((e) => {
+        throw ComAtprotoServerDeleteSession.toKnownErr(e)
+      })
   }
 
   describeServer(
@@ -4590,6 +5007,17 @@ export class ComAtprotoTempNS {
     )
   }
 
+  dereferenceScope(
+    params?: ComAtprotoTempDereferenceScope.QueryParams,
+    opts?: ComAtprotoTempDereferenceScope.CallOptions,
+  ): Promise<ComAtprotoTempDereferenceScope.Response> {
+    return this._client
+      .call('com.atproto.temp.dereferenceScope', params, undefined, opts)
+      .catch((e) => {
+        throw ComAtprotoTempDereferenceScope.toKnownErr(e)
+      })
+  }
+
   fetchLabels(
     params?: ComAtprotoTempFetchLabels.QueryParams,
     opts?: ComAtprotoTempFetchLabels.CallOptions,
@@ -4623,6 +5051,104 @@ export class ComAtprotoTempNS {
       opts?.qp,
       data,
       opts,
+    )
+  }
+}
+
+export class ComGermnetworkNS {
+  _client: XrpcClient
+  declaration: ComGermnetworkDeclarationRecord
+
+  constructor(client: XrpcClient) {
+    this._client = client
+    this.declaration = new ComGermnetworkDeclarationRecord(client)
+  }
+}
+
+export class ComGermnetworkDeclarationRecord {
+  _client: XrpcClient
+
+  constructor(client: XrpcClient) {
+    this._client = client
+  }
+
+  async list(
+    params: OmitKey<ComAtprotoRepoListRecords.QueryParams, 'collection'>,
+  ): Promise<{
+    cursor?: string
+    records: { uri: string; value: ComGermnetworkDeclaration.Record }[]
+  }> {
+    const res = await this._client.call('com.atproto.repo.listRecords', {
+      collection: 'com.germnetwork.declaration',
+      ...params,
+    })
+    return res.data
+  }
+
+  async get(
+    params: OmitKey<ComAtprotoRepoGetRecord.QueryParams, 'collection'>,
+  ): Promise<{
+    uri: string
+    cid: string
+    value: ComGermnetworkDeclaration.Record
+  }> {
+    const res = await this._client.call('com.atproto.repo.getRecord', {
+      collection: 'com.germnetwork.declaration',
+      ...params,
+    })
+    return res.data
+  }
+
+  async create(
+    params: OmitKey<
+      ComAtprotoRepoCreateRecord.InputSchema,
+      'collection' | 'record'
+    >,
+    record: Un$Typed<ComGermnetworkDeclaration.Record>,
+    headers?: Record<string, string>,
+  ): Promise<{ uri: string; cid: string }> {
+    const collection = 'com.germnetwork.declaration'
+    const res = await this._client.call(
+      'com.atproto.repo.createRecord',
+      undefined,
+      {
+        collection,
+        rkey: 'self',
+        ...params,
+        record: { ...record, $type: collection },
+      },
+      { encoding: 'application/json', headers },
+    )
+    return res.data
+  }
+
+  async put(
+    params: OmitKey<
+      ComAtprotoRepoPutRecord.InputSchema,
+      'collection' | 'record'
+    >,
+    record: Un$Typed<ComGermnetworkDeclaration.Record>,
+    headers?: Record<string, string>,
+  ): Promise<{ uri: string; cid: string }> {
+    const collection = 'com.germnetwork.declaration'
+    const res = await this._client.call(
+      'com.atproto.repo.putRecord',
+      undefined,
+      { collection, ...params, record: { ...record, $type: collection } },
+      { encoding: 'application/json', headers },
+    )
+    return res.data
+  }
+
+  async delete(
+    params: OmitKey<ComAtprotoRepoDeleteRecord.InputSchema, 'collection'>,
+    headers?: Record<string, string>,
+  ): Promise<void> {
+    await this._client.call(
+      'com.atproto.repo.deleteRecord',
+      undefined,
+      { collection: 'com.germnetwork.declaration', ...params },
+      { headers },
     )
   }
 }
@@ -4746,6 +5272,18 @@ export class ToolsOzoneModerationNS {
     this._client = client
   }
 
+  cancelScheduledActions(
+    data?: ToolsOzoneModerationCancelScheduledActions.InputSchema,
+    opts?: ToolsOzoneModerationCancelScheduledActions.CallOptions,
+  ): Promise<ToolsOzoneModerationCancelScheduledActions.Response> {
+    return this._client.call(
+      'tools.ozone.moderation.cancelScheduledActions',
+      opts?.qp,
+      data,
+      opts,
+    )
+  }
+
   emitEvent(
     data?: ToolsOzoneModerationEmitEvent.InputSchema,
     opts?: ToolsOzoneModerationEmitEvent.CallOptions,
@@ -4855,6 +5393,18 @@ export class ToolsOzoneModerationNS {
     )
   }
 
+  listScheduledActions(
+    data?: ToolsOzoneModerationListScheduledActions.InputSchema,
+    opts?: ToolsOzoneModerationListScheduledActions.CallOptions,
+  ): Promise<ToolsOzoneModerationListScheduledActions.Response> {
+    return this._client.call(
+      'tools.ozone.moderation.listScheduledActions',
+      opts?.qp,
+      data,
+      opts,
+    )
+  }
+
   queryEvents(
     params?: ToolsOzoneModerationQueryEvents.QueryParams,
     opts?: ToolsOzoneModerationQueryEvents.CallOptions,
@@ -4875,6 +5425,18 @@ export class ToolsOzoneModerationNS {
       'tools.ozone.moderation.queryStatuses',
       params,
       undefined,
+      opts,
+    )
+  }
+
+  scheduleAction(
+    data?: ToolsOzoneModerationScheduleAction.InputSchema,
+    opts?: ToolsOzoneModerationScheduleAction.CallOptions,
+  ): Promise<ToolsOzoneModerationScheduleAction.Response> {
+    return this._client.call(
+      'tools.ozone.moderation.scheduleAction',
+      opts?.qp,
+      data,
       opts,
     )
   }

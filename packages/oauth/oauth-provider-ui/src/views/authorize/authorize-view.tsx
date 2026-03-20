@@ -1,13 +1,14 @@
+import type { AuthorizeData } from '#/hydration-data.d.ts'
 import { Trans, useLingui } from '@lingui/react/macro'
 import { useEffect, useState } from 'react'
 import type { CustomizationData, Session } from '@atproto/oauth-provider-api'
+import { OAuthPromptMode } from '@atproto/oauth-types'
 import {
   LayoutTitlePage,
   LayoutTitlePageProps,
 } from '../../components/layouts/layout-title-page.tsx'
 import { useApi } from '../../hooks/use-api.ts'
 import { useBoundDispatch } from '../../hooks/use-bound-dispatch.ts'
-import type { AuthorizeData } from '../../hydration-data'
 import { Override } from '../../lib/util.ts'
 import { ConsentView } from './consent/consent-view.tsx'
 import { ResetPasswordView } from './reset-password/reset-password-view.tsx'
@@ -33,6 +34,23 @@ enum View {
   Done,
 }
 
+function getInitialView(
+  promptMode: OAuthPromptMode | undefined,
+  canSignUp: boolean,
+  forceSignIn: boolean,
+  hasInitialSessions: boolean,
+): (typeof View)[keyof typeof View] {
+  if (promptMode === 'create' && canSignUp) {
+    return View.SignUp
+  } else if (forceSignIn) {
+    return View.SignIn
+  } else if (!canSignUp || hasInitialSessions) {
+    return View.SignIn
+  }
+
+  return View.Welcome
+}
+
 export function AuthorizeView({
   authorizeData,
   initialSessions,
@@ -45,11 +63,18 @@ export function AuthorizeView({
 
   const forceSignIn = authorizeData.loginHint != null
 
-  const canSignUp =
-    !forceSignIn && Boolean(customizationData?.availableUserDomains?.length)
+  const hasAvailableSessions = Boolean(initialSessions.length)
+  const hasAvailableUserDomains = Boolean(
+    customizationData?.availableUserDomains?.length,
+  )
+  const canSignUp = !forceSignIn && hasAvailableUserDomains
 
-  const initialView =
-    !canSignUp || initialSessions.length ? View.SignIn : View.Welcome
+  const initialView = getInitialView(
+    authorizeData.promptMode,
+    hasAvailableUserDomains,
+    forceSignIn,
+    hasAvailableSessions,
+  )
 
   const [view, setView] = useState<View>(initialView)
 

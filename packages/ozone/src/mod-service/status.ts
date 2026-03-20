@@ -2,10 +2,10 @@
 
 import { HOUR } from '@atproto/common'
 import { AtUri } from '@atproto/syntax'
+import { isAppealReport } from '../api/util'
 import { Database } from '../db'
 import { DatabaseSchema } from '../db/schema'
 import { jsonb } from '../db/types'
-import { REASONAPPEAL } from '../lexicon/types/com/atproto/moderation/defs'
 import {
   REVIEWCLOSED,
   REVIEWESCALATED,
@@ -125,6 +125,7 @@ const getSubjectStatusForModerationEvent = ({
       }
     case 'tools.ozone.moderation.defs#ageAssuranceEvent':
     case 'tools.ozone.moderation.defs#ageAssuranceOverrideEvent':
+    case 'tools.ozone.moderation.defs#ageAssurancePurgeEvent':
       return {
         reviewState: defaultReviewState,
       }
@@ -258,6 +259,15 @@ export const moderationSubjectStatusQueryBuilder = (db: DatabaseSchema) => {
       'account_record_status_stats.processedCount',
       'account_record_status_stats.takendownCount',
     ])
+    .leftJoin('account_strike', (join) =>
+      join.onRef('moderation_subject_status.did', '=', 'account_strike.did'),
+    )
+    .select([
+      'account_strike.activeStrikeCount as strikeCount',
+      'account_strike.totalStrikeCount',
+      'account_strike.firstStrikeAt',
+      'account_strike.lastStrikeAt',
+    ])
 }
 
 // Based on a given moderation action event, this function will update the moderation status of the subject
@@ -341,7 +351,8 @@ export const adjustModerationSubjectStatus = async (
 
   const isAppealEvent =
     action === 'tools.ozone.moderation.defs#modEventReport' &&
-    meta?.reportType === REASONAPPEAL
+    meta?.reportType &&
+    isAppealReport(`${meta.reportType}`)
 
   const subjectStatus = getSubjectStatusForModerationEvent({
     currentStatus,
@@ -457,6 +468,13 @@ export const adjustModerationSubjectStatus = async (
       newStatus.ageAssuranceUpdatedBy = 'admin'
       subjectStatus.ageAssuranceUpdatedBy = 'admin'
     }
+  }
+
+  if (action === 'tools.ozone.moderation.defs#ageAssurancePurgeEvent') {
+    newStatus.ageAssuranceState = 'unknown'
+    subjectStatus.ageAssuranceState = 'unknown'
+    newStatus.ageAssuranceUpdatedBy = null
+    subjectStatus.ageAssuranceUpdatedBy = null
   }
 
   if (blobCids?.length) {

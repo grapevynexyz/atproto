@@ -17,6 +17,24 @@ import * as AppBskyActorGetSuggestions from './types/app/bsky/actor/getSuggestio
 import * as AppBskyActorPutPreferences from './types/app/bsky/actor/putPreferences.js'
 import * as AppBskyActorSearchActors from './types/app/bsky/actor/searchActors.js'
 import * as AppBskyActorSearchActorsTypeahead from './types/app/bsky/actor/searchActorsTypeahead.js'
+import * as AppBskyAgeassuranceBegin from './types/app/bsky/ageassurance/begin.js'
+import * as AppBskyAgeassuranceGetConfig from './types/app/bsky/ageassurance/getConfig.js'
+import * as AppBskyAgeassuranceGetState from './types/app/bsky/ageassurance/getState.js'
+import * as AppBskyBookmarkCreateBookmark from './types/app/bsky/bookmark/createBookmark.js'
+import * as AppBskyBookmarkDeleteBookmark from './types/app/bsky/bookmark/deleteBookmark.js'
+import * as AppBskyBookmarkGetBookmarks from './types/app/bsky/bookmark/getBookmarks.js'
+import * as AppBskyContactDismissMatch from './types/app/bsky/contact/dismissMatch.js'
+import * as AppBskyContactGetMatches from './types/app/bsky/contact/getMatches.js'
+import * as AppBskyContactGetSyncStatus from './types/app/bsky/contact/getSyncStatus.js'
+import * as AppBskyContactImportContacts from './types/app/bsky/contact/importContacts.js'
+import * as AppBskyContactRemoveData from './types/app/bsky/contact/removeData.js'
+import * as AppBskyContactSendNotification from './types/app/bsky/contact/sendNotification.js'
+import * as AppBskyContactStartPhoneVerification from './types/app/bsky/contact/startPhoneVerification.js'
+import * as AppBskyContactVerifyPhone from './types/app/bsky/contact/verifyPhone.js'
+import * as AppBskyDraftCreateDraft from './types/app/bsky/draft/createDraft.js'
+import * as AppBskyDraftDeleteDraft from './types/app/bsky/draft/deleteDraft.js'
+import * as AppBskyDraftGetDrafts from './types/app/bsky/draft/getDrafts.js'
+import * as AppBskyDraftUpdateDraft from './types/app/bsky/draft/updateDraft.js'
 import * as AppBskyFeedDescribeFeedGenerator from './types/app/bsky/feed/describeFeedGenerator.js'
 import * as AppBskyFeedGetActorFeeds from './types/app/bsky/feed/getActorFeeds.js'
 import * as AppBskyFeedGetActorLikes from './types/app/bsky/feed/getActorLikes.js'
@@ -71,11 +89,15 @@ import * as AppBskyNotificationUnregisterPush from './types/app/bsky/notificatio
 import * as AppBskyNotificationUpdateSeen from './types/app/bsky/notification/updateSeen.js'
 import * as AppBskyUnspeccedGetAgeAssuranceState from './types/app/bsky/unspecced/getAgeAssuranceState.js'
 import * as AppBskyUnspeccedGetConfig from './types/app/bsky/unspecced/getConfig.js'
+import * as AppBskyUnspeccedGetOnboardingSuggestedStarterPacks from './types/app/bsky/unspecced/getOnboardingSuggestedStarterPacks.js'
+import * as AppBskyUnspeccedGetOnboardingSuggestedStarterPacksSkeleton from './types/app/bsky/unspecced/getOnboardingSuggestedStarterPacksSkeleton.js'
+import * as AppBskyUnspeccedGetOnboardingSuggestedUsersSkeleton from './types/app/bsky/unspecced/getOnboardingSuggestedUsersSkeleton.js'
 import * as AppBskyUnspeccedGetPopularFeedGenerators from './types/app/bsky/unspecced/getPopularFeedGenerators.js'
 import * as AppBskyUnspeccedGetPostThreadOtherV2 from './types/app/bsky/unspecced/getPostThreadOtherV2.js'
 import * as AppBskyUnspeccedGetPostThreadV2 from './types/app/bsky/unspecced/getPostThreadV2.js'
 import * as AppBskyUnspeccedGetSuggestedFeeds from './types/app/bsky/unspecced/getSuggestedFeeds.js'
 import * as AppBskyUnspeccedGetSuggestedFeedsSkeleton from './types/app/bsky/unspecced/getSuggestedFeedsSkeleton.js'
+import * as AppBskyUnspeccedGetSuggestedOnboardingUsers from './types/app/bsky/unspecced/getSuggestedOnboardingUsers.js'
 import * as AppBskyUnspeccedGetSuggestedStarterPacks from './types/app/bsky/unspecced/getSuggestedStarterPacks.js'
 import * as AppBskyUnspeccedGetSuggestedStarterPacksSkeleton from './types/app/bsky/unspecced/getSuggestedStarterPacksSkeleton.js'
 import * as AppBskyUnspeccedGetSuggestedUsers from './types/app/bsky/unspecced/getSuggestedUsers.js'
@@ -140,6 +162,7 @@ import * as ComAtprotoIdentitySubmitPlcOperation from './types/com/atproto/ident
 import * as ComAtprotoIdentityUpdateHandle from './types/com/atproto/identity/updateHandle.js'
 import * as ComAtprotoLabelQueryLabels from './types/com/atproto/label/queryLabels.js'
 import * as ComAtprotoLabelSubscribeLabels from './types/com/atproto/label/subscribeLabels.js'
+import * as ComAtprotoLexiconResolveLexicon from './types/com/atproto/lexicon/resolveLexicon.js'
 import * as ComAtprotoModerationCreateReport from './types/com/atproto/moderation/createReport.js'
 import * as ComAtprotoRepoApplyWrites from './types/com/atproto/repo/applyWrites.js'
 import * as ComAtprotoRepoCreateRecord from './types/com/atproto/repo/createRecord.js'
@@ -195,6 +218,7 @@ import * as ComAtprotoSyncSubscribeRepos from './types/com/atproto/sync/subscrib
 import * as ComAtprotoTempAddReservedHandle from './types/com/atproto/temp/addReservedHandle.js'
 import * as ComAtprotoTempCheckHandleAvailability from './types/com/atproto/temp/checkHandleAvailability.js'
 import * as ComAtprotoTempCheckSignupQueue from './types/com/atproto/temp/checkSignupQueue.js'
+import * as ComAtprotoTempDereferenceScope from './types/com/atproto/temp/dereferenceScope.js'
 import * as ComAtprotoTempFetchLabels from './types/com/atproto/temp/fetchLabels.js'
 import * as ComAtprotoTempRequestPhoneVerification from './types/com/atproto/temp/requestPhoneVerification.js'
 import * as ComAtprotoTempRevokeAccountCredentials from './types/com/atproto/temp/revokeAccountCredentials.js'
@@ -203,6 +227,7 @@ import * as ToolsOzoneCommunicationDeleteTemplate from './types/tools/ozone/comm
 import * as ToolsOzoneCommunicationListTemplates from './types/tools/ozone/communication/listTemplates.js'
 import * as ToolsOzoneCommunicationUpdateTemplate from './types/tools/ozone/communication/updateTemplate.js'
 import * as ToolsOzoneHostingGetAccountHistory from './types/tools/ozone/hosting/getAccountHistory.js'
+import * as ToolsOzoneModerationCancelScheduledActions from './types/tools/ozone/moderation/cancelScheduledActions.js'
 import * as ToolsOzoneModerationEmitEvent from './types/tools/ozone/moderation/emitEvent.js'
 import * as ToolsOzoneModerationGetAccountTimeline from './types/tools/ozone/moderation/getAccountTimeline.js'
 import * as ToolsOzoneModerationGetEvent from './types/tools/ozone/moderation/getEvent.js'
@@ -212,8 +237,10 @@ import * as ToolsOzoneModerationGetRepo from './types/tools/ozone/moderation/get
 import * as ToolsOzoneModerationGetReporterStats from './types/tools/ozone/moderation/getReporterStats.js'
 import * as ToolsOzoneModerationGetRepos from './types/tools/ozone/moderation/getRepos.js'
 import * as ToolsOzoneModerationGetSubjects from './types/tools/ozone/moderation/getSubjects.js'
+import * as ToolsOzoneModerationListScheduledActions from './types/tools/ozone/moderation/listScheduledActions.js'
 import * as ToolsOzoneModerationQueryEvents from './types/tools/ozone/moderation/queryEvents.js'
 import * as ToolsOzoneModerationQueryStatuses from './types/tools/ozone/moderation/queryStatuses.js'
+import * as ToolsOzoneModerationScheduleAction from './types/tools/ozone/moderation/scheduleAction.js'
 import * as ToolsOzoneModerationSearchRepos from './types/tools/ozone/moderation/searchRepos.js'
 import * as ToolsOzoneSafelinkAddRule from './types/tools/ozone/safelink/addRule.js'
 import * as ToolsOzoneSafelinkQueryEvents from './types/tools/ozone/safelink/queryEvents.js'
@@ -286,6 +313,62 @@ export const TOOLS_OZONE_MODERATION = {
   DefsTimelineEventPlcTombstone:
     'tools.ozone.moderation.defs#timelineEventPlcTombstone',
 }
+export const TOOLS_OZONE_REPORT = {
+  DefsReasonAppeal: 'tools.ozone.report.defs#reasonAppeal',
+  DefsReasonOther: 'tools.ozone.report.defs#reasonOther',
+  DefsReasonViolenceAnimal: 'tools.ozone.report.defs#reasonViolenceAnimal',
+  DefsReasonViolenceThreats: 'tools.ozone.report.defs#reasonViolenceThreats',
+  DefsReasonViolenceGraphicContent:
+    'tools.ozone.report.defs#reasonViolenceGraphicContent',
+  DefsReasonViolenceGlorification:
+    'tools.ozone.report.defs#reasonViolenceGlorification',
+  DefsReasonViolenceExtremistContent:
+    'tools.ozone.report.defs#reasonViolenceExtremistContent',
+  DefsReasonViolenceTrafficking:
+    'tools.ozone.report.defs#reasonViolenceTrafficking',
+  DefsReasonViolenceOther: 'tools.ozone.report.defs#reasonViolenceOther',
+  DefsReasonSexualAbuseContent:
+    'tools.ozone.report.defs#reasonSexualAbuseContent',
+  DefsReasonSexualNCII: 'tools.ozone.report.defs#reasonSexualNCII',
+  DefsReasonSexualDeepfake: 'tools.ozone.report.defs#reasonSexualDeepfake',
+  DefsReasonSexualAnimal: 'tools.ozone.report.defs#reasonSexualAnimal',
+  DefsReasonSexualUnlabeled: 'tools.ozone.report.defs#reasonSexualUnlabeled',
+  DefsReasonSexualOther: 'tools.ozone.report.defs#reasonSexualOther',
+  DefsReasonChildSafetyCSAM: 'tools.ozone.report.defs#reasonChildSafetyCSAM',
+  DefsReasonChildSafetyGroom: 'tools.ozone.report.defs#reasonChildSafetyGroom',
+  DefsReasonChildSafetyPrivacy:
+    'tools.ozone.report.defs#reasonChildSafetyPrivacy',
+  DefsReasonChildSafetyHarassment:
+    'tools.ozone.report.defs#reasonChildSafetyHarassment',
+  DefsReasonChildSafetyOther: 'tools.ozone.report.defs#reasonChildSafetyOther',
+  DefsReasonHarassmentTroll: 'tools.ozone.report.defs#reasonHarassmentTroll',
+  DefsReasonHarassmentTargeted:
+    'tools.ozone.report.defs#reasonHarassmentTargeted',
+  DefsReasonHarassmentHateSpeech:
+    'tools.ozone.report.defs#reasonHarassmentHateSpeech',
+  DefsReasonHarassmentDoxxing:
+    'tools.ozone.report.defs#reasonHarassmentDoxxing',
+  DefsReasonHarassmentOther: 'tools.ozone.report.defs#reasonHarassmentOther',
+  DefsReasonMisleadingBot: 'tools.ozone.report.defs#reasonMisleadingBot',
+  DefsReasonMisleadingImpersonation:
+    'tools.ozone.report.defs#reasonMisleadingImpersonation',
+  DefsReasonMisleadingSpam: 'tools.ozone.report.defs#reasonMisleadingSpam',
+  DefsReasonMisleadingScam: 'tools.ozone.report.defs#reasonMisleadingScam',
+  DefsReasonMisleadingElections:
+    'tools.ozone.report.defs#reasonMisleadingElections',
+  DefsReasonMisleadingOther: 'tools.ozone.report.defs#reasonMisleadingOther',
+  DefsReasonRuleSiteSecurity: 'tools.ozone.report.defs#reasonRuleSiteSecurity',
+  DefsReasonRuleProhibitedSales:
+    'tools.ozone.report.defs#reasonRuleProhibitedSales',
+  DefsReasonRuleBanEvasion: 'tools.ozone.report.defs#reasonRuleBanEvasion',
+  DefsReasonRuleOther: 'tools.ozone.report.defs#reasonRuleOther',
+  DefsReasonSelfHarmContent: 'tools.ozone.report.defs#reasonSelfHarmContent',
+  DefsReasonSelfHarmED: 'tools.ozone.report.defs#reasonSelfHarmED',
+  DefsReasonSelfHarmStunts: 'tools.ozone.report.defs#reasonSelfHarmStunts',
+  DefsReasonSelfHarmSubstances:
+    'tools.ozone.report.defs#reasonSelfHarmSubstances',
+  DefsReasonSelfHarmOther: 'tools.ozone.report.defs#reasonSelfHarmOther',
+}
 export const TOOLS_OZONE_TEAM = {
   DefsRoleAdmin: 'tools.ozone.team.defs#roleAdmin',
   DefsRoleModerator: 'tools.ozone.team.defs#roleModerator',
@@ -326,6 +409,10 @@ export class AppNS {
 export class AppBskyNS {
   _server: Server
   actor: AppBskyActorNS
+  ageassurance: AppBskyAgeassuranceNS
+  bookmark: AppBskyBookmarkNS
+  contact: AppBskyContactNS
+  draft: AppBskyDraftNS
   embed: AppBskyEmbedNS
   feed: AppBskyFeedNS
   graph: AppBskyGraphNS
@@ -338,6 +425,10 @@ export class AppBskyNS {
   constructor(server: Server) {
     this._server = server
     this.actor = new AppBskyActorNS(server)
+    this.ageassurance = new AppBskyAgeassuranceNS(server)
+    this.bookmark = new AppBskyBookmarkNS(server)
+    this.contact = new AppBskyContactNS(server)
+    this.draft = new AppBskyDraftNS(server)
     this.embed = new AppBskyEmbedNS(server)
     this.feed = new AppBskyFeedNS(server)
     this.graph = new AppBskyGraphNS(server)
@@ -437,6 +528,254 @@ export class AppBskyActorNS {
     >,
   ) {
     const nsid = 'app.bsky.actor.searchActorsTypeahead' // @ts-ignore
+    return this._server.xrpc.method(nsid, cfg)
+  }
+}
+
+export class AppBskyAgeassuranceNS {
+  _server: Server
+
+  constructor(server: Server) {
+    this._server = server
+  }
+
+  begin<A extends Auth = void>(
+    cfg: MethodConfigOrHandler<
+      A,
+      AppBskyAgeassuranceBegin.QueryParams,
+      AppBskyAgeassuranceBegin.HandlerInput,
+      AppBskyAgeassuranceBegin.HandlerOutput
+    >,
+  ) {
+    const nsid = 'app.bsky.ageassurance.begin' // @ts-ignore
+    return this._server.xrpc.method(nsid, cfg)
+  }
+
+  getConfig<A extends Auth = void>(
+    cfg: MethodConfigOrHandler<
+      A,
+      AppBskyAgeassuranceGetConfig.QueryParams,
+      AppBskyAgeassuranceGetConfig.HandlerInput,
+      AppBskyAgeassuranceGetConfig.HandlerOutput
+    >,
+  ) {
+    const nsid = 'app.bsky.ageassurance.getConfig' // @ts-ignore
+    return this._server.xrpc.method(nsid, cfg)
+  }
+
+  getState<A extends Auth = void>(
+    cfg: MethodConfigOrHandler<
+      A,
+      AppBskyAgeassuranceGetState.QueryParams,
+      AppBskyAgeassuranceGetState.HandlerInput,
+      AppBskyAgeassuranceGetState.HandlerOutput
+    >,
+  ) {
+    const nsid = 'app.bsky.ageassurance.getState' // @ts-ignore
+    return this._server.xrpc.method(nsid, cfg)
+  }
+}
+
+export class AppBskyBookmarkNS {
+  _server: Server
+
+  constructor(server: Server) {
+    this._server = server
+  }
+
+  createBookmark<A extends Auth = void>(
+    cfg: MethodConfigOrHandler<
+      A,
+      AppBskyBookmarkCreateBookmark.QueryParams,
+      AppBskyBookmarkCreateBookmark.HandlerInput,
+      AppBskyBookmarkCreateBookmark.HandlerOutput
+    >,
+  ) {
+    const nsid = 'app.bsky.bookmark.createBookmark' // @ts-ignore
+    return this._server.xrpc.method(nsid, cfg)
+  }
+
+  deleteBookmark<A extends Auth = void>(
+    cfg: MethodConfigOrHandler<
+      A,
+      AppBskyBookmarkDeleteBookmark.QueryParams,
+      AppBskyBookmarkDeleteBookmark.HandlerInput,
+      AppBskyBookmarkDeleteBookmark.HandlerOutput
+    >,
+  ) {
+    const nsid = 'app.bsky.bookmark.deleteBookmark' // @ts-ignore
+    return this._server.xrpc.method(nsid, cfg)
+  }
+
+  getBookmarks<A extends Auth = void>(
+    cfg: MethodConfigOrHandler<
+      A,
+      AppBskyBookmarkGetBookmarks.QueryParams,
+      AppBskyBookmarkGetBookmarks.HandlerInput,
+      AppBskyBookmarkGetBookmarks.HandlerOutput
+    >,
+  ) {
+    const nsid = 'app.bsky.bookmark.getBookmarks' // @ts-ignore
+    return this._server.xrpc.method(nsid, cfg)
+  }
+}
+
+export class AppBskyContactNS {
+  _server: Server
+
+  constructor(server: Server) {
+    this._server = server
+  }
+
+  dismissMatch<A extends Auth = void>(
+    cfg: MethodConfigOrHandler<
+      A,
+      AppBskyContactDismissMatch.QueryParams,
+      AppBskyContactDismissMatch.HandlerInput,
+      AppBskyContactDismissMatch.HandlerOutput
+    >,
+  ) {
+    const nsid = 'app.bsky.contact.dismissMatch' // @ts-ignore
+    return this._server.xrpc.method(nsid, cfg)
+  }
+
+  getMatches<A extends Auth = void>(
+    cfg: MethodConfigOrHandler<
+      A,
+      AppBskyContactGetMatches.QueryParams,
+      AppBskyContactGetMatches.HandlerInput,
+      AppBskyContactGetMatches.HandlerOutput
+    >,
+  ) {
+    const nsid = 'app.bsky.contact.getMatches' // @ts-ignore
+    return this._server.xrpc.method(nsid, cfg)
+  }
+
+  getSyncStatus<A extends Auth = void>(
+    cfg: MethodConfigOrHandler<
+      A,
+      AppBskyContactGetSyncStatus.QueryParams,
+      AppBskyContactGetSyncStatus.HandlerInput,
+      AppBskyContactGetSyncStatus.HandlerOutput
+    >,
+  ) {
+    const nsid = 'app.bsky.contact.getSyncStatus' // @ts-ignore
+    return this._server.xrpc.method(nsid, cfg)
+  }
+
+  importContacts<A extends Auth = void>(
+    cfg: MethodConfigOrHandler<
+      A,
+      AppBskyContactImportContacts.QueryParams,
+      AppBskyContactImportContacts.HandlerInput,
+      AppBskyContactImportContacts.HandlerOutput
+    >,
+  ) {
+    const nsid = 'app.bsky.contact.importContacts' // @ts-ignore
+    return this._server.xrpc.method(nsid, cfg)
+  }
+
+  removeData<A extends Auth = void>(
+    cfg: MethodConfigOrHandler<
+      A,
+      AppBskyContactRemoveData.QueryParams,
+      AppBskyContactRemoveData.HandlerInput,
+      AppBskyContactRemoveData.HandlerOutput
+    >,
+  ) {
+    const nsid = 'app.bsky.contact.removeData' // @ts-ignore
+    return this._server.xrpc.method(nsid, cfg)
+  }
+
+  sendNotification<A extends Auth = void>(
+    cfg: MethodConfigOrHandler<
+      A,
+      AppBskyContactSendNotification.QueryParams,
+      AppBskyContactSendNotification.HandlerInput,
+      AppBskyContactSendNotification.HandlerOutput
+    >,
+  ) {
+    const nsid = 'app.bsky.contact.sendNotification' // @ts-ignore
+    return this._server.xrpc.method(nsid, cfg)
+  }
+
+  startPhoneVerification<A extends Auth = void>(
+    cfg: MethodConfigOrHandler<
+      A,
+      AppBskyContactStartPhoneVerification.QueryParams,
+      AppBskyContactStartPhoneVerification.HandlerInput,
+      AppBskyContactStartPhoneVerification.HandlerOutput
+    >,
+  ) {
+    const nsid = 'app.bsky.contact.startPhoneVerification' // @ts-ignore
+    return this._server.xrpc.method(nsid, cfg)
+  }
+
+  verifyPhone<A extends Auth = void>(
+    cfg: MethodConfigOrHandler<
+      A,
+      AppBskyContactVerifyPhone.QueryParams,
+      AppBskyContactVerifyPhone.HandlerInput,
+      AppBskyContactVerifyPhone.HandlerOutput
+    >,
+  ) {
+    const nsid = 'app.bsky.contact.verifyPhone' // @ts-ignore
+    return this._server.xrpc.method(nsid, cfg)
+  }
+}
+
+export class AppBskyDraftNS {
+  _server: Server
+
+  constructor(server: Server) {
+    this._server = server
+  }
+
+  createDraft<A extends Auth = void>(
+    cfg: MethodConfigOrHandler<
+      A,
+      AppBskyDraftCreateDraft.QueryParams,
+      AppBskyDraftCreateDraft.HandlerInput,
+      AppBskyDraftCreateDraft.HandlerOutput
+    >,
+  ) {
+    const nsid = 'app.bsky.draft.createDraft' // @ts-ignore
+    return this._server.xrpc.method(nsid, cfg)
+  }
+
+  deleteDraft<A extends Auth = void>(
+    cfg: MethodConfigOrHandler<
+      A,
+      AppBskyDraftDeleteDraft.QueryParams,
+      AppBskyDraftDeleteDraft.HandlerInput,
+      AppBskyDraftDeleteDraft.HandlerOutput
+    >,
+  ) {
+    const nsid = 'app.bsky.draft.deleteDraft' // @ts-ignore
+    return this._server.xrpc.method(nsid, cfg)
+  }
+
+  getDrafts<A extends Auth = void>(
+    cfg: MethodConfigOrHandler<
+      A,
+      AppBskyDraftGetDrafts.QueryParams,
+      AppBskyDraftGetDrafts.HandlerInput,
+      AppBskyDraftGetDrafts.HandlerOutput
+    >,
+  ) {
+    const nsid = 'app.bsky.draft.getDrafts' // @ts-ignore
+    return this._server.xrpc.method(nsid, cfg)
+  }
+
+  updateDraft<A extends Auth = void>(
+    cfg: MethodConfigOrHandler<
+      A,
+      AppBskyDraftUpdateDraft.QueryParams,
+      AppBskyDraftUpdateDraft.HandlerInput,
+      AppBskyDraftUpdateDraft.HandlerOutput
+    >,
+  ) {
+    const nsid = 'app.bsky.draft.updateDraft' // @ts-ignore
     return this._server.xrpc.method(nsid, cfg)
   }
 }
@@ -1144,6 +1483,42 @@ export class AppBskyUnspeccedNS {
     return this._server.xrpc.method(nsid, cfg)
   }
 
+  getOnboardingSuggestedStarterPacks<A extends Auth = void>(
+    cfg: MethodConfigOrHandler<
+      A,
+      AppBskyUnspeccedGetOnboardingSuggestedStarterPacks.QueryParams,
+      AppBskyUnspeccedGetOnboardingSuggestedStarterPacks.HandlerInput,
+      AppBskyUnspeccedGetOnboardingSuggestedStarterPacks.HandlerOutput
+    >,
+  ) {
+    const nsid = 'app.bsky.unspecced.getOnboardingSuggestedStarterPacks' // @ts-ignore
+    return this._server.xrpc.method(nsid, cfg)
+  }
+
+  getOnboardingSuggestedStarterPacksSkeleton<A extends Auth = void>(
+    cfg: MethodConfigOrHandler<
+      A,
+      AppBskyUnspeccedGetOnboardingSuggestedStarterPacksSkeleton.QueryParams,
+      AppBskyUnspeccedGetOnboardingSuggestedStarterPacksSkeleton.HandlerInput,
+      AppBskyUnspeccedGetOnboardingSuggestedStarterPacksSkeleton.HandlerOutput
+    >,
+  ) {
+    const nsid = 'app.bsky.unspecced.getOnboardingSuggestedStarterPacksSkeleton' // @ts-ignore
+    return this._server.xrpc.method(nsid, cfg)
+  }
+
+  getOnboardingSuggestedUsersSkeleton<A extends Auth = void>(
+    cfg: MethodConfigOrHandler<
+      A,
+      AppBskyUnspeccedGetOnboardingSuggestedUsersSkeleton.QueryParams,
+      AppBskyUnspeccedGetOnboardingSuggestedUsersSkeleton.HandlerInput,
+      AppBskyUnspeccedGetOnboardingSuggestedUsersSkeleton.HandlerOutput
+    >,
+  ) {
+    const nsid = 'app.bsky.unspecced.getOnboardingSuggestedUsersSkeleton' // @ts-ignore
+    return this._server.xrpc.method(nsid, cfg)
+  }
+
   getPopularFeedGenerators<A extends Auth = void>(
     cfg: MethodConfigOrHandler<
       A,
@@ -1201,6 +1576,18 @@ export class AppBskyUnspeccedNS {
     >,
   ) {
     const nsid = 'app.bsky.unspecced.getSuggestedFeedsSkeleton' // @ts-ignore
+    return this._server.xrpc.method(nsid, cfg)
+  }
+
+  getSuggestedOnboardingUsers<A extends Auth = void>(
+    cfg: MethodConfigOrHandler<
+      A,
+      AppBskyUnspeccedGetSuggestedOnboardingUsers.QueryParams,
+      AppBskyUnspeccedGetSuggestedOnboardingUsers.HandlerInput,
+      AppBskyUnspeccedGetSuggestedOnboardingUsers.HandlerOutput
+    >,
+  ) {
+    const nsid = 'app.bsky.unspecced.getSuggestedOnboardingUsers' // @ts-ignore
     return this._server.xrpc.method(nsid, cfg)
   }
 
@@ -2094,6 +2481,18 @@ export class ComAtprotoLexiconNS {
   constructor(server: Server) {
     this._server = server
   }
+
+  resolveLexicon<A extends Auth = void>(
+    cfg: MethodConfigOrHandler<
+      A,
+      ComAtprotoLexiconResolveLexicon.QueryParams,
+      ComAtprotoLexiconResolveLexicon.HandlerInput,
+      ComAtprotoLexiconResolveLexicon.HandlerOutput
+    >,
+  ) {
+    const nsid = 'com.atproto.lexicon.resolveLexicon' // @ts-ignore
+    return this._server.xrpc.method(nsid, cfg)
+  }
 }
 
 export class ComAtprotoModerationNS {
@@ -2794,6 +3193,18 @@ export class ComAtprotoTempNS {
     return this._server.xrpc.method(nsid, cfg)
   }
 
+  dereferenceScope<A extends Auth = void>(
+    cfg: MethodConfigOrHandler<
+      A,
+      ComAtprotoTempDereferenceScope.QueryParams,
+      ComAtprotoTempDereferenceScope.HandlerInput,
+      ComAtprotoTempDereferenceScope.HandlerOutput
+    >,
+  ) {
+    const nsid = 'com.atproto.temp.dereferenceScope' // @ts-ignore
+    return this._server.xrpc.method(nsid, cfg)
+  }
+
   fetchLabels<A extends Auth = void>(
     cfg: MethodConfigOrHandler<
       A,
@@ -2952,6 +3363,18 @@ export class ToolsOzoneModerationNS {
     this._server = server
   }
 
+  cancelScheduledActions<A extends Auth = void>(
+    cfg: MethodConfigOrHandler<
+      A,
+      ToolsOzoneModerationCancelScheduledActions.QueryParams,
+      ToolsOzoneModerationCancelScheduledActions.HandlerInput,
+      ToolsOzoneModerationCancelScheduledActions.HandlerOutput
+    >,
+  ) {
+    const nsid = 'tools.ozone.moderation.cancelScheduledActions' // @ts-ignore
+    return this._server.xrpc.method(nsid, cfg)
+  }
+
   emitEvent<A extends Auth = void>(
     cfg: MethodConfigOrHandler<
       A,
@@ -3060,6 +3483,18 @@ export class ToolsOzoneModerationNS {
     return this._server.xrpc.method(nsid, cfg)
   }
 
+  listScheduledActions<A extends Auth = void>(
+    cfg: MethodConfigOrHandler<
+      A,
+      ToolsOzoneModerationListScheduledActions.QueryParams,
+      ToolsOzoneModerationListScheduledActions.HandlerInput,
+      ToolsOzoneModerationListScheduledActions.HandlerOutput
+    >,
+  ) {
+    const nsid = 'tools.ozone.moderation.listScheduledActions' // @ts-ignore
+    return this._server.xrpc.method(nsid, cfg)
+  }
+
   queryEvents<A extends Auth = void>(
     cfg: MethodConfigOrHandler<
       A,
@@ -3081,6 +3516,18 @@ export class ToolsOzoneModerationNS {
     >,
   ) {
     const nsid = 'tools.ozone.moderation.queryStatuses' // @ts-ignore
+    return this._server.xrpc.method(nsid, cfg)
+  }
+
+  scheduleAction<A extends Auth = void>(
+    cfg: MethodConfigOrHandler<
+      A,
+      ToolsOzoneModerationScheduleAction.QueryParams,
+      ToolsOzoneModerationScheduleAction.HandlerInput,
+      ToolsOzoneModerationScheduleAction.HandlerOutput
+    >,
+  ) {
+    const nsid = 'tools.ozone.moderation.scheduleAction' // @ts-ignore
     return this._server.xrpc.method(nsid, cfg)
   }
 

@@ -9,13 +9,13 @@ import {
   streamToNodeBuffer,
 } from '@atproto/common'
 import { RpcPermissionMatch } from '@atproto/oauth-scopes'
-import { ResponseType, XRPCError as XRPCClientError } from '@atproto/xrpc'
 import {
   CatchallHandler,
   HandlerPipeThroughBuffer,
   HandlerPipeThroughStream,
   InternalServerError,
   InvalidRequestError,
+  ResponseType,
   XRPCError as XRPCServerError,
   excludeErrorResult,
   parseReqNsid,
@@ -301,15 +301,9 @@ async function pipethroughStream(
           const passThrough = new PassThrough()
 
           void tryParsingError(upstream.headers, passThrough).then((parsed) => {
-            const xrpcError = new XRPCClientError(
-              upstream.statusCode === 500
-                ? ResponseType.UpstreamFailure
-                : upstream.statusCode,
-              parsed.error,
-              parsed.message,
-              Object.fromEntries(responseHeaders(upstream.headers, false)),
-              { cause: dispatchOptions },
-            )
+            const xrpcError = new PipethroughUpstreamError(upstream, parsed, {
+              cause: dispatchOptions,
+            })
 
             reject(xrpcError)
           }, reject)
@@ -356,18 +350,9 @@ async function pipethroughRequest(
   if (upstream.statusCode >= 400) {
     const parsed = await tryParsingError(upstream.headers, upstream.body)
 
-    // Note "XRPCClientError" is used instead of "XRPCServerError" in order to
-    // allow users of this function to capture & handle these errors (namely in
-    // "app.bsky.feed.getPostThread").
-    throw new XRPCClientError(
-      upstream.statusCode === 500
-        ? ResponseType.UpstreamFailure
-        : upstream.statusCode,
-      parsed.error,
-      parsed.message,
-      Object.fromEntries(responseHeaders(upstream.headers, false)),
-      { cause: dispatchOptions },
-    )
+    throw new PipethroughUpstreamError(upstream, parsed, {
+      cause: dispatchOptions,
+    })
   }
 
   return upstream
@@ -509,7 +494,30 @@ function* responseHeaders(
 // Utils
 // -------------------
 
-export const CHAT_BSKY_METHODS = new Set<string>([
+/**
+ * Performs lexicon method matching on a set of methods,
+ * taking into account that they are treated case-insensitively.
+ */
+export class LxmSet {
+  private inner: Set<string>
+  private original: Iterable<string>
+  constructor(items: Iterable<string>) {
+    this.inner = new Set(Array.from(items, normalizeLxm))
+    this.original = items
+  }
+  has(lxm: string) {
+    return this.inner.has(normalizeLxm(lxm))
+  }
+  *[Symbol.iterator](): Iterator<string> {
+    yield* this.original
+  }
+}
+
+export function normalizeLxm(lxm: string) {
+  return lxm.toLowerCase()
+}
+
+export const CHAT_BSKY_METHODS = new LxmSet([
   ids.ChatBskyActorDeleteAccount,
   ids.ChatBskyActorExportAccountData,
   ids.ChatBskyConvoDeleteMessageForSelf,
@@ -526,7 +534,7 @@ export const CHAT_BSKY_METHODS = new Set<string>([
   ids.ChatBskyConvoUpdateRead,
 ])
 
-export const PRIVILEGED_METHODS = new Set<string>([
+export const PRIVILEGED_METHODS = new LxmSet([
   ...CHAT_BSKY_METHODS,
   ids.ComAtprotoServerCreateAccount,
 ])
@@ -534,7 +542,7 @@ export const PRIVILEGED_METHODS = new Set<string>([
 // These endpoints are related to account management and must be used directly,
 // not proxied or service-authed. Service auth may be utilized between PDS and
 // entryway for these methods.
-export const PROTECTED_METHODS = new Set<string>([
+export const PROTECTED_METHODS = new LxmSet([
   ids.ComAtprotoAdminSendEmail,
   ids.ComAtprotoIdentityRequestPlcOperationSignature,
   ids.ComAtprotoIdentitySignPlcOperation,
@@ -585,6 +593,9 @@ const defaultService = (
     case ids.ToolsOzoneSafelinkRemoveRule:
     case ids.ToolsOzoneSafelinkQueryEvents:
     case ids.ToolsOzoneSafelinkQueryRules:
+    case ids.ToolsOzoneModerationListScheduledActions:
+    case ids.ToolsOzoneModerationCancelScheduledActions:
+    case ids.ToolsOzoneModerationScheduleAction:
       return {
         serviceId: 'atproto_labeler',
         serviceInfo: ctx.cfg.modService,
@@ -608,4 +619,30 @@ const safeString = (str: unknown): string | undefined => {
 
 function logResponseError(this: ServerResponse, err: unknown): void {
   httpLogger.warn({ err }, 'error forwarding upstream response')
+}
+
+export class PipethroughUpstreamError extends XRPCServerError {
+  constructor(
+    readonly upstream: {
+      statusCode: number
+      headers: IncomingHttpHeaders
+    },
+    payload: { message?: string; error?: string },
+    options?: ErrorOptions,
+  ) {
+    const status =
+      upstream.statusCode === 500
+        ? ResponseType.UpstreamFailure
+        : upstream.statusCode
+
+    super(status, payload.message, payload.error, options)
+  }
+
+  get headers(): Record<string, string> {
+    return Object.fromEntries(responseHeaders(this.upstream.headers, false))
+  }
+
+  get error() {
+    return this.customErrorName ?? this.typeName
+  }
 }

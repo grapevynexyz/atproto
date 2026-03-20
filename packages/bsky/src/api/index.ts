@@ -5,6 +5,24 @@ import getProfiles from './app/bsky/actor/getProfiles'
 import getSuggestions from './app/bsky/actor/getSuggestions'
 import searchActors from './app/bsky/actor/searchActors'
 import searchActorsTypeahead from './app/bsky/actor/searchActorsTypeahead'
+import aaBegin from './app/bsky/ageassurance/begin'
+import aaGetConfig from './app/bsky/ageassurance/getConfig'
+import aaGetState from './app/bsky/ageassurance/getState'
+import createBookmark from './app/bsky/bookmark/createBookmark'
+import deleteBookmark from './app/bsky/bookmark/deleteBookmark'
+import getBookmarks from './app/bsky/bookmark/getBookmarks'
+import dismissMatch from './app/bsky/contact/dismissMatch'
+import getMatches from './app/bsky/contact/getMatches'
+import getSyncStatus from './app/bsky/contact/getSyncStatus'
+import importContacts from './app/bsky/contact/importContacts'
+import removeData from './app/bsky/contact/removeData'
+import sendNotification from './app/bsky/contact/sendNotification'
+import startPhoneVerification from './app/bsky/contact/startPhoneVerification'
+import verifyPhone from './app/bsky/contact/verifyPhone'
+import createDraft from './app/bsky/draft/createDraft'
+import deleteDraft from './app/bsky/draft/deleteDraft'
+import getDrafts from './app/bsky/draft/getDrafts'
+import updateDraft from './app/bsky/draft/updateDraft'
 import getActorFeeds from './app/bsky/feed/getActorFeeds'
 import getActorLikes from './app/bsky/feed/getActorLikes'
 import getAuthorFeed from './app/bsky/feed/getAuthorFeed'
@@ -52,13 +70,16 @@ import putActivitySubscription from './app/bsky/notification/putActivitySubscrip
 import putPreferences from './app/bsky/notification/putPreferences'
 import putPreferencesV2 from './app/bsky/notification/putPreferencesV2'
 import registerPush from './app/bsky/notification/registerPush'
+import unregisterPush from './app/bsky/notification/unregisterPush'
 import updateSeen from './app/bsky/notification/updateSeen'
 import getAgeAssuranceState from './app/bsky/unspecced/getAgeAssuranceState'
 import getConfig from './app/bsky/unspecced/getConfig'
+import getOnboardingSuggestedStarterPacks from './app/bsky/unspecced/getOnboardingSuggestedStarterPacks'
 import getPopularFeedGenerators from './app/bsky/unspecced/getPopularFeedGenerators'
 import getPostThreadOtherV2 from './app/bsky/unspecced/getPostThreadOtherV2'
 import getPostThreadV2 from './app/bsky/unspecced/getPostThreadV2'
 import getUnspeccedSuggestedFeeds from './app/bsky/unspecced/getSuggestedFeeds'
+import getSuggestedOnboardingUsers from './app/bsky/unspecced/getSuggestedOnboardingUsers'
 import getSuggestedStarterPacks from './app/bsky/unspecced/getSuggestedStarterPacks'
 import getSuggestedUsers from './app/bsky/unspecced/getSuggestedUsers'
 import getTaggedSuggestions from './app/bsky/unspecced/getTaggedSuggestions'
@@ -81,9 +102,26 @@ export * as blobResolver from './blob-resolver'
 
 export * as external from './external'
 
+export * as sitemap from './sitemap'
+
 export default function (server: Server, ctx: AppContext) {
   // app.bsky
   getTimeline(server, ctx)
+  createBookmark(server, ctx)
+  deleteBookmark(server, ctx)
+  getBookmarks(server, ctx)
+  createDraft(server, ctx)
+  deleteDraft(server, ctx)
+  getDrafts(server, ctx)
+  updateDraft(server, ctx)
+  dismissMatch(server, ctx)
+  getMatches(server, ctx)
+  getSyncStatus(server, ctx)
+  importContacts(server, ctx)
+  removeData(server, ctx)
+  sendNotification(server, ctx)
+  startPhoneVerification(server, ctx)
+  verifyPhone(server, ctx)
   getActorFeeds(server, ctx)
   getSuggestedFeeds(server, ctx)
   getAuthorFeed(server, ctx)
@@ -127,6 +165,8 @@ export default function (server: Server, ctx: AppContext) {
   getSuggestedFollowsByActor(server, ctx)
   getTrendingTopics(server, ctx)
   getTrends(server, ctx)
+  getOnboardingSuggestedStarterPacks(server, ctx)
+  getSuggestedOnboardingUsers(server, ctx)
   getSuggestedStarterPacks(server, ctx)
   getSuggestedUsers(server, ctx)
   getUnspeccedSuggestedFeeds(server, ctx)
@@ -143,11 +183,15 @@ export default function (server: Server, ctx: AppContext) {
   putPreferences(server, ctx)
   putPreferencesV2(server, ctx)
   registerPush(server, ctx)
+  unregisterPush(server, ctx)
   getConfig(server, ctx)
   getPopularFeedGenerators(server, ctx)
   getTaggedSuggestions(server, ctx)
   getAgeAssuranceState(server, ctx)
   initAgeAssurance(server, ctx)
+  aaGetConfig(server, ctx)
+  aaGetState(server, ctx)
+  aaBegin(server, ctx)
   // com.atproto
   getSubjectStatus(server, ctx)
   updateSubjectStatus(server, ctx)

@@ -18,9 +18,18 @@ import { Database } from './db'
 import { ImageInvalidator } from './image-invalidator'
 import { ModerationService, ModerationServiceCreator } from './mod-service'
 import {
+  ModerationServiceProfile,
+  ModerationServiceProfileCreator,
+} from './mod-service/profile'
+import { StrikeService, StrikeServiceCreator } from './mod-service/strike'
+import {
   SafelinkRuleService,
   SafelinkRuleServiceCreator,
 } from './safelink/service'
+import {
+  ScheduledActionService,
+  ScheduledActionServiceCreator,
+} from './scheduled-action/service'
 import { Sequencer } from './sequencer/sequencer'
 import { SetService, SetServiceCreator } from './set/service'
 import { SettingService, SettingServiceCreator } from './setting/service'
@@ -45,10 +54,13 @@ export type AppContextOptions = {
   db: Database
   cfg: OzoneConfig
   modService: ModerationServiceCreator
+  moderationServiceProfile: ModerationServiceProfileCreator
   communicationTemplateService: CommunicationTemplateServiceCreator
   safelinkRuleService: SafelinkRuleServiceCreator
+  scheduledActionService: ScheduledActionServiceCreator
   setService: SetServiceCreator
   settingService: SettingServiceCreator
+  strikeService: StrikeServiceCreator
   teamService: TeamServiceCreator
   appviewAgent: AtpAgent
   pdsAgent: AtpAgent | undefined
@@ -122,6 +134,24 @@ export class AppContext {
       appview: cfg.appview.pushEvents ? cfg.appview : undefined,
       pds: cfg.pds ?? undefined,
     })
+
+    const communicationTemplateService = CommunicationTemplateService.creator()
+    const safelinkRuleService = SafelinkRuleService.creator()
+    const scheduledActionService = ScheduledActionService.creator()
+    const teamService = TeamService.creator(
+      appviewAgent,
+      cfg.appview.did,
+      createAuthHeaders,
+    )
+    const setService = SetService.creator()
+    const settingService = SettingService.creator()
+    const strikeService = StrikeService.creator()
+    const verificationService = VerificationService.creator()
+    const verificationIssuer = VerificationIssuer.creator()
+    const moderationServiceProfile = ModerationServiceProfile.creator(
+      cfg,
+      appviewAgent,
+    )
     const modService = ModerationService.creator(
       signingKey,
       signingKeyId,
@@ -131,20 +161,9 @@ export class AppContext {
       eventPusher,
       appviewAgent,
       createAuthHeaders,
+      strikeService,
       overrides?.imgInvalidator,
     )
-
-    const communicationTemplateService = CommunicationTemplateService.creator()
-    const safelinkRuleService = SafelinkRuleService.creator()
-    const teamService = TeamService.creator(
-      appviewAgent,
-      cfg.appview.did,
-      createAuthHeaders,
-    )
-    const setService = SetService.creator()
-    const settingService = SettingService.creator()
-    const verificationService = VerificationService.creator()
-    const verificationIssuer = VerificationIssuer.creator()
 
     const sequencer = new Sequencer(modService(db))
 
@@ -159,11 +178,14 @@ export class AppContext {
         db,
         cfg,
         modService,
+        moderationServiceProfile,
         communicationTemplateService,
         safelinkRuleService,
+        scheduledActionService,
         teamService,
         setService,
         settingService,
+        strikeService,
         appviewAgent,
         pdsAgent,
         chatAgent,
@@ -215,6 +237,10 @@ export class AppContext {
     return this.opts.safelinkRuleService
   }
 
+  get scheduledActionService(): ScheduledActionServiceCreator {
+    return this.opts.scheduledActionService
+  }
+
   get teamService(): TeamServiceCreator {
     return this.opts.teamService
   }
@@ -227,12 +253,20 @@ export class AppContext {
     return this.opts.settingService
   }
 
+  get strikeService(): StrikeServiceCreator {
+    return this.opts.strikeService
+  }
+
   get verificationService(): VerificationServiceCreator {
     return this.opts.verificationService
   }
 
   get verificationIssuer(): VerificationIssuerCreator {
     return this.opts.verificationIssuer
+  }
+
+  get moderationServiceProfile(): ModerationServiceProfileCreator {
+    return this.opts.moderationServiceProfile
   }
 
   get appviewAgent(): AtpAgent {

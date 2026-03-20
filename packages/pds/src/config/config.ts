@@ -2,6 +2,7 @@ import assert from 'node:assert'
 import path from 'node:path'
 import { DAY, HOUR, SECOND } from '@atproto/common'
 import { BrandingInput, HcaptchaConfig } from '@atproto/oauth-provider'
+import { ensureValidDid } from '@atproto/syntax'
 import { ServerEnvironment } from './env'
 
 // off-config but still from env:
@@ -25,6 +26,7 @@ export const envToCfg = (env: ServerEnvironment): ServerConfig => {
     termsOfServiceUrl: env.termsOfServiceUrl,
     contactEmailAddress: env.contactEmailAddress,
     acceptingImports: env.acceptingImports ?? true,
+    maxImportSize: env.maxImportSize,
     blobUploadLimit: env.blobUploadLimit ?? 5 * 1024 * 1024, // 5mb
     devMode: env.devMode ?? false,
   }
@@ -319,8 +321,11 @@ export const envToCfg = (env: ServerEnvironment): ServerConfig => {
         },
       }
 
-  const lexiconCfg: LexiconResolverConfig = {
-    didAuthority: env.lexiconDidAuthority,
+  const lexiconCfg: LexiconResolverConfig = {}
+
+  if (env.lexiconDidAuthority != null) {
+    ensureValidDid(env.lexiconDidAuthority)
+    lexiconCfg.didAuthority = env.lexiconDidAuthority
   }
 
   return {
@@ -379,6 +384,7 @@ export type ServiceConfig = {
   privacyPolicyUrl?: string
   termsOfServiceUrl?: string
   acceptingImports: boolean
+  maxImportSize?: number
   blobUploadLimit: number
   contactEmailAddress?: string
   devMode: boolean
@@ -467,7 +473,7 @@ export type OAuthConfig = {
 }
 
 export type LexiconResolverConfig = {
-  didAuthority?: string
+  didAuthority?: `did:${string}:${string}`
 }
 
 export type InvitesConfig =

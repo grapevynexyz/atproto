@@ -6,7 +6,7 @@ import {
   OAuthClient,
   OAuthClientOptions,
   OAuthSession,
-  SessionEventMap,
+  SessionHooks,
 } from '@atproto/oauth-client'
 import {
   OAuthClientMetadataInput,
@@ -18,11 +18,7 @@ import {
 import { BrowserOAuthDatabase } from './browser-oauth-database.js'
 import { BrowserRuntimeImplementation } from './browser-runtime-implementation.js'
 import { LoginContinuedInParentWindowError } from './errors.js'
-import {
-  Simplify,
-  TypedBroadcastChannel,
-  buildLoopbackClientId,
-} from './util.js'
+import { Simplify, buildLoopbackClientId } from './util.js'
 
 export type BrowserOAuthClientOptions = Simplify<
   {
@@ -70,11 +66,15 @@ type PopupChannelData = PopupChannelResultData | PopupChannelAckData
 //- State synchronization channel
 
 type SyncChannelMessage = {
-  [K in keyof SessionEventMap]: [K, SessionEventMap[K]]
-}[keyof SessionEventMap]
+  [K in keyof SessionHooks & string]: {
+    name: K
+    args: Parameters<NonNullable<SessionHooks[K]>>
+  }
+}[keyof SessionHooks]
 
-const syncChannel: TypedBroadcastChannel<SyncChannelMessage> =
-  new BroadcastChannel(`${NAMESPACE}(synchronization-channel)`)
+const syncChannel = new BroadcastChannel(
+  `${NAMESPACE}(synchronization-channel:2)`,
+)
 
 export type BrowserOAuthClientLoadOptions = Simplify<
   {
@@ -83,7 +83,9 @@ export type BrowserOAuthClientLoadOptions = Simplify<
   } & Omit<BrowserOAuthClientOptions, 'clientMetadata'>
 >
 
-export class BrowserOAuthClient extends OAuthClient implements Disposable {
+const runtimeImplementation = new BrowserRuntimeImplementation()
+
+export class BrowserOAuthClient extends OAuthClient implements AsyncDisposable {
   static async load({ clientId, ...options }: BrowserOAuthClientLoadOptions) {
     if (clientId.startsWith('http:')) {
       const clientMetadata = atprotoLoopbackClientMetadata(clientId)
@@ -94,13 +96,15 @@ export class BrowserOAuthClient extends OAuthClient implements Disposable {
         clientId,
         ...options,
       })
-      return new BrowserOAuthClient({ clientMetadata, ...options })
+      return new BrowserOAuthClient({ ...options, clientMetadata })
     } else {
       throw new TypeError(`Invalid client id: ${clientId}`)
     }
   }
 
-  readonly [Symbol.dispose]: () => void
+  private readonly ac = new AbortController()
+
+  private readonly database: BrowserOAuthDatabase
 
   constructor({
     clientMetadata = atprotoLoopbackClientMetadata(
@@ -128,7 +132,7 @@ export class BrowserOAuthClient extends OAuthClient implements Disposable {
       responseMode,
       keyset: undefined,
 
-      runtimeImplementation: new BrowserRuntimeImplementation(),
+      runtimeImplementation,
 
       sessionStore: database.getSessionStore(),
       stateStore: database.getStateStore(),
@@ -140,42 +144,46 @@ export class BrowserOAuthClient extends OAuthClient implements Disposable {
         database.getAuthorizationServerMetadataCache(),
       protectedResourceMetadataCache:
         database.getProtectedResourceMetadataCache(),
+
+      onDelete: async (sub, cause) => {
+        if (localStorage.getItem(`${NAMESPACE}(sub)`) === sub) {
+          localStorage.removeItem(`${NAMESPACE}(sub)`)
+        }
+
+        syncChannel.postMessage({
+          name: 'onDelete',
+          args: [sub, cause],
+        } satisfies SyncChannelMessage)
+
+        return options.onDelete?.call(null, sub, cause)
+      },
+
+      onUpdate: async (sub, session) => {
+        syncChannel.postMessage({
+          name: 'onUpdate',
+          args: [sub, session],
+        } satisfies SyncChannelMessage)
+
+        return options.onUpdate?.call(null, sub, session)
+      },
     })
 
-    // @TODO replace with AsyncDisposableStack once they are standardized
-    const ac = new AbortController()
-    const { signal } = ac
-    this[Symbol.dispose] = () => ac.abort()
+    this.database = database
 
-    signal.addEventListener('abort', () => database[Symbol.asyncDispose](), {
-      once: true,
-    })
+    const { signal } = this.ac
 
-    // Keep track of the current session
-
-    this.addEventListener('deleted', ({ detail: { sub } }) => {
-      if (localStorage.getItem(`${NAMESPACE}(sub)`) === sub) {
-        localStorage.removeItem(`${NAMESPACE}(sub)`)
-      }
-    })
-
-    // Session synchronization across tabs
-
-    for (const type of ['deleted', 'updated'] as const) {
-      this.sessionGetter.addEventListener(type, ({ detail }) => {
-        // Notify other tabs when a session is deleted or updated
-        syncChannel.postMessage([type, detail] as SyncChannelMessage)
-      })
-    }
-
+    // Trigger hooks when an event is emitted in another tab
     syncChannel.addEventListener(
       'message',
       (event) => {
-        if (event.source !== window) {
-          // Trigger listeners when an event is received from another tab
-          const [type, detail] = event.data
-          this.dispatchCustomEvent(type, detail)
-        }
+        if (event.source === window) return
+
+        const { name, args } = event.data as SyncChannelMessage
+
+        const hook = options[name]
+
+        // @ts-expect-error TS has a hard time matching the args with the hook
+        void hook?.(...args)
       },
       // Remove the listener when the client is disposed
       { signal },
@@ -195,11 +203,21 @@ export class BrowserOAuthClient extends OAuthClient implements Disposable {
    * want to only restore existing sessions, and bypass the automatic processing
    * of login callbacks.
    */
-  async init(refresh?: boolean) {
+  async init(refresh?: boolean): Promise<
+    // Session restored
+    | { session: OAuthSession; state?: never }
+    // Login callback processed
+    | { session: OAuthSession; state: string | null }
+    // No session or callback
+    | undefined
+  > {
     // If the URL currently contains oauth query parameters ("state" + "code" or
     // "state" + "error"), let's automatically process them.
     const params = this.readCallbackParams()
-    if (params) return this.initCallback(params)
+    if (params) {
+      const redirectUri = this.findRedirectUrl()
+      if (redirectUri) return this.initCallback(params, redirectUri)
+    }
 
     return this.initRestore(refresh)
   }
@@ -232,12 +250,10 @@ export class BrowserOAuthClient extends OAuthClient implements Disposable {
     return super.revoke(sub)
   }
 
-  signIn(
+  async signIn(
     input: string,
-    options: AuthorizeOptions & { display: 'popup' },
-  ): Promise<OAuthSession>
-  signIn(input: string, options?: AuthorizeOptions): Promise<never>
-  async signIn(input: string, options?: AuthorizeOptions) {
+    options?: AuthorizeOptions,
+  ): Promise<OAuthSession> {
     if (options?.display === 'popup') {
       return this.signInPopup(input, options)
     } else {
@@ -380,9 +396,16 @@ export class BrowserOAuthClient extends OAuthClient implements Disposable {
   }
 
   public async initCallback(
-    params: URLSearchParams,
+    params = this.readCallbackParams(),
     redirectUri = this.findRedirectUrl(),
-  ) {
+  ): Promise<{
+    session: OAuthSession
+    state: string | null
+  }> {
+    if (!params) {
+      throw new TypeError('No OAuth callback parameters found in the URL')
+    }
+
     // Replace the current history entry without the params (this will prevent
     // the following code to run again if the user refreshes the page)
     if (this.responseMode === 'fragment') {
@@ -466,6 +489,14 @@ export class BrowserOAuthClient extends OAuthClient implements Disposable {
 
         throw err
       })
+  }
+
+  async [Symbol.asyncDispose]() {
+    try {
+      this.ac.abort()
+    } finally {
+      await this.database[Symbol.asyncDispose]()
+    }
   }
 
   dispose() {

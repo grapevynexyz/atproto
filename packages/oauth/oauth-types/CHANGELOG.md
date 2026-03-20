@@ -1,5 +1,80 @@
 # @atproto/oauth-types
 
+## 0.6.3
+
+### Patch Changes
+
+- [#4620](https://github.com/bluesky-social/atproto/pull/4620) [`fdbbff8`](https://github.com/bluesky-social/atproto/commit/fdbbff854363ed3518a4039ca43cd279e69600e0) Thanks [@matthieusieben](https://github.com/matthieusieben)! - Ensure that `OAuthAuthorizationRequestQuery` always contains a `client_id`
+
+- [#4620](https://github.com/bluesky-social/atproto/pull/4620) [`fdbbff8`](https://github.com/bluesky-social/atproto/commit/fdbbff854363ed3518a4039ca43cd279e69600e0) Thanks [@matthieusieben](https://github.com/matthieusieben)! - Update `oauthRequestUriSchema` to require min length
+
+## 0.6.2
+
+### Patch Changes
+
+- Updated dependencies [[`d54d707`](https://github.com/bluesky-social/atproto/commit/d54d7077eb32041e1f61c312efa1dd0d768c774e), [`d54d707`](https://github.com/bluesky-social/atproto/commit/d54d7077eb32041e1f61c312efa1dd0d768c774e)]:
+  - @atproto/did@0.3.0
+
+## 0.6.1
+
+### Patch Changes
+
+- Updated dependencies [[`2f78893`](https://github.com/bluesky-social/atproto/commit/2f78893ace3bbf14d4bac36837820ddb46658c98)]:
+  - @atproto/did@0.2.4
+
+## 0.6.0
+
+### Minor Changes
+
+- [#4461](https://github.com/bluesky-social/atproto/pull/4461) [`5d8e7a6`](https://github.com/bluesky-social/atproto/commit/5d8e7a6588fc9e57e15d83d47bb45103205e3e41) Thanks [@ThisIsMissEm](https://github.com/ThisIsMissEm)! - Add prompt_values_supported to Authorization Server Metadata
+
+### Patch Changes
+
+- [#4465](https://github.com/bluesky-social/atproto/pull/4465) [`95ef3c2`](https://github.com/bluesky-social/atproto/commit/95ef3c24e8072e9d49412950b033cb8607764ee0) Thanks [@matthieusieben](https://github.com/matthieusieben)! - Improve error message in case of invalid redirect uri
+
+## 0.5.2
+
+### Patch Changes
+
+- Updated dependencies [[`8012627`](https://github.com/bluesky-social/atproto/commit/8012627a1226cb2f1c753385ad2497b6b43ffd2e), [`d396de0`](https://github.com/bluesky-social/atproto/commit/d396de016d1d55d08cfad1dabd3ffd9eaeea76ea)]:
+  - @atproto/did@0.2.3
+
+## 0.5.1
+
+### Patch Changes
+
+- Updated dependencies [[`261968fd6`](https://github.com/bluesky-social/atproto/commit/261968fd65014ded613e2bf085d61a7864b8fba7)]:
+  - @atproto/did@0.2.2
+
+## 0.5.0
+
+### Minor Changes
+
+- [#4289](https://github.com/bluesky-social/atproto/pull/4289) [`8ff5ec4ca`](https://github.com/bluesky-social/atproto/commit/8ff5ec4caa9a1f5c1e453a416ba2af22d1ee4f58) Thanks [@matthieusieben](https://github.com/matthieusieben)! - Remove exported `oauthHttpsRedirectURISchema` and `oauthPrivateUseRedirectURISchema` in favor of `oauthRedirectUriSchema` and `oauthLoopbackClientRedirectUriSchema`, which provide semantically meaningful groupings of redirect URIs based on OAuth client types.
+
+  `oauthHttpsRedirectURISchema` can still be accessed using `httpsUriSchema`.
+  `oauthPrivateUseRedirectURISchema` can still be accessed using `privateUseUriSchema`.
+
+- [#4289](https://github.com/bluesky-social/atproto/pull/4289) [`8ff5ec4ca`](https://github.com/bluesky-social/atproto/commit/8ff5ec4caa9a1f5c1e453a416ba2af22d1ee4f58) Thanks [@matthieusieben](https://github.com/matthieusieben)! - Remove unused `isLoopbackUrl` utility
+
+### Patch Changes
+
+- [#4289](https://github.com/bluesky-social/atproto/pull/4289) [`8ff5ec4ca`](https://github.com/bluesky-social/atproto/commit/8ff5ec4caa9a1f5c1e453a416ba2af22d1ee4f58) Thanks [@matthieusieben](https://github.com/matthieusieben)! - Enforce stronger validation of `privateUseUriSchema`
+
+## 0.4.2
+
+### Patch Changes
+
+- [#4216](https://github.com/bluesky-social/atproto/pull/4216) [`09439d7d6`](https://github.com/bluesky-social/atproto/commit/09439d7d688294ad1a0c78a74b901ba2f7c5f4c3) Thanks [@matthieusieben](https://github.com/matthieusieben)! - Expose new utilities to build and work with atproto loopback client metadata
+
+- [#4216](https://github.com/bluesky-social/atproto/pull/4216) [`09439d7d6`](https://github.com/bluesky-social/atproto/commit/09439d7d688294ad1a0c78a74b901ba2f7c5f4c3) Thanks [@matthieusieben](https://github.com/matthieusieben)! - Improve validation of `AtprotoOAuthScope`
+
+- [#4216](https://github.com/bluesky-social/atproto/pull/4216) [`09439d7d6`](https://github.com/bluesky-social/atproto/commit/09439d7d688294ad1a0c78a74b901ba2f7c5f4c3) Thanks [@matthieusieben](https://github.com/matthieusieben)! - Add `AtprotoOAuthTokenResponse` schema
+
+- Updated dependencies [[`f560cf226`](https://github.com/bluesky-social/atproto/commit/f560cf2266715666ce5852ab095fcfb3876ae815), [`fefe70126`](https://github.com/bluesky-social/atproto/commit/fefe70126d0ea82507ac750f669b3478290f186b), [`f560cf226`](https://github.com/bluesky-social/atproto/commit/f560cf2266715666ce5852ab095fcfb3876ae815), [`f560cf226`](https://github.com/bluesky-social/atproto/commit/f560cf2266715666ce5852ab095fcfb3876ae815), [`f560cf226`](https://github.com/bluesky-social/atproto/commit/f560cf2266715666ce5852ab095fcfb3876ae815), [`09439d7d6`](https://github.com/bluesky-social/atproto/commit/09439d7d688294ad1a0c78a74b901ba2f7c5f4c3)]:
+  - @atproto/jwk@0.6.0
+  - @atproto/did@0.2.1
+
 ## 0.4.1
 
 ### Patch Changes

@@ -10,7 +10,7 @@ Object {
             "allowSubscriptions": "followers",
           },
         },
-        "avatar": "https://bsky.public.url/img/avatar/plain/user(1)/cids(1)@jpeg",
+        "avatar": "https://bsky.public.url/img/avatar/plain/user(1)/cids(1)",
         "createdAt": "1970-01-01T00:00:00.000Z",
         "did": "user(0)",
         "displayName": "bobby",
@@ -21,14 +21,15 @@ Object {
           "muted": false,
         },
       },
+      "bookmarkCount": 0,
       "cid": "cids(0)",
       "embed": Object {
         "$type": "app.bsky.embed.images#view",
         "images": Array [
           Object {
             "alt": "../dev-env/assets/key-landscape-small.jpg",
-            "fullsize": "https://bsky.public.url/img/feed_fullsize/plain/user(1)/cids(2)@jpeg",
-            "thumb": "https://bsky.public.url/img/feed_thumbnail/plain/user(1)/cids(2)@jpeg",
+            "fullsize": "https://bsky.public.url/img/feed_fullsize/plain/user(1)/cids(2)",
+            "thumb": "https://bsky.public.url/img/feed_thumbnail/plain/user(1)/cids(2)",
           },
         ],
       },
@@ -86,6 +87,7 @@ Object {
       "repostCount": 0,
       "uri": "record(0)",
       "viewer": Object {
+        "bookmarked": false,
         "embeddingDisabled": false,
         "threadMuted": false,
       },
@@ -113,6 +115,7 @@ Object {
           "muted": false,
         },
       },
+      "bookmarkCount": 0,
       "cid": "cids(0)",
       "embed": Object {
         "$type": "app.bsky.embed.record#view",
@@ -124,7 +127,7 @@ Object {
                 "allowSubscriptions": "followers",
               },
             },
-            "avatar": "https://bsky.public.url/img/avatar/plain/user(2)/cids(2)@jpeg",
+            "avatar": "https://bsky.public.url/img/avatar/plain/user(2)/cids(2)",
             "createdAt": "1970-01-01T00:00:00.000Z",
             "did": "user(1)",
             "displayName": "ali",
@@ -202,6 +205,7 @@ Object {
       "repostCount": 0,
       "uri": "record(0)",
       "viewer": Object {
+        "bookmarked": false,
         "embeddingDisabled": false,
         "threadMuted": false,
       },
@@ -230,6 +234,7 @@ Object {
           "muted": false,
         },
       },
+      "bookmarkCount": 0,
       "cid": "cids(0)",
       "embed": Object {
         "$type": "app.bsky.embed.record#view",
@@ -241,7 +246,7 @@ Object {
                 "allowSubscriptions": "followers",
               },
             },
-            "avatar": "https://bsky.public.url/img/avatar/plain/user(2)/cids(2)@jpeg",
+            "avatar": "https://bsky.public.url/img/avatar/plain/user(2)/cids(2)",
             "createdAt": "1970-01-01T00:00:00.000Z",
             "did": "user(1)",
             "displayName": "ali",
@@ -319,6 +324,7 @@ Object {
       "repostCount": 0,
       "uri": "record(0)",
       "viewer": Object {
+        "bookmarked": false,
         "embeddingDisabled": false,
         "threadMuted": false,
       },
@@ -338,6 +344,7 @@ Object {
           "muted": false,
         },
       },
+      "bookmarkCount": 0,
       "cid": "cids(4)",
       "embed": Object {
         "$type": "app.bsky.embed.record#view",
@@ -349,7 +356,7 @@ Object {
                 "allowSubscriptions": "followers",
               },
             },
-            "avatar": "https://bsky.public.url/img/avatar/plain/user(2)/cids(2)@jpeg",
+            "avatar": "https://bsky.public.url/img/avatar/plain/user(2)/cids(2)",
             "createdAt": "1970-01-01T00:00:00.000Z",
             "did": "user(1)",
             "displayName": "ali",
@@ -427,6 +434,7 @@ Object {
       "repostCount": 0,
       "uri": "record(3)",
       "viewer": Object {
+        "bookmarked": false,
         "embeddingDisabled": false,
         "threadMuted": false,
       },

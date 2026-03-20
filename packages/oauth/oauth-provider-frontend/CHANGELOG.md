@@ -1,5 +1,31 @@
 # @atproto/oauth-provider-frontend
 
+## 0.2.9
+
+### Patch Changes
+
+- [#4619](https://github.com/bluesky-social/atproto/pull/4619) [`a2e4e95`](https://github.com/bluesky-social/atproto/commit/a2e4e9584730c1742aca7c1fcc59533a7c159740) Thanks [@matthieusieben](https://github.com/matthieusieben)! - Fix depencies version
+
+## 0.2.8
+
+## 0.2.7
+
+## 0.2.6
+
+## 0.2.5
+
+## 0.2.4
+
+## 0.2.3
+
+## 0.2.2
+
+## 0.2.1
+
+### Patch Changes
+
+- [#4186](https://github.com/bluesky-social/atproto/pull/4186) [`d570db43d`](https://github.com/bluesky-social/atproto/commit/d570db43d6df2044dbaa5813cac469b3e73ba219) Thanks [@matthieusieben](https://github.com/matthieusieben)! - Add Japanese translation on OAuth Provider UI
+
 ## 0.2.0
 
 ### Minor Changes

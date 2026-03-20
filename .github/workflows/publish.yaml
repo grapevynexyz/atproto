@@ -5,33 +5,36 @@ on:
     branches:
       - main
 
+permissions:
+  id-token: write
+  contents: write
+  pull-requests: write
+
 env:
-  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
   build:
-    name: Build & Publish
+    name: Publish
     if: github.repository == 'bluesky-social/atproto'
-    runs-on: ubuntu-22.04
-    permissions:
-      contents: write
-      pull-requests: write
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - run: corepack enable && corepack prepare --activate
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v6
         with:
-          node-version-file: package.json
-          cache: 'pnpm'
-      - run: pnpm i --frozen-lockfile
-      - run: pnpm build
-      - run: pnpm verify
+          cache: pnpm
+          node-version-file: '.nvmrc'
+          registry-url: 'https://registry.npmjs.org'
+      - run: npm install --global npm@latest
+      - run: pnpm install --frozen-lockfile
+        env:
+          PUPPETEER_SKIP_DOWNLOAD: true
       - name: Publish
-        id: changesets
         uses: changesets/action@v1
+        id: changesets
         with:
           publish: pnpm release
-          version: pnpm version-packages
+          version: pnpm run version-packages
           commit: 'Version packages'
           title: 'Version packages'

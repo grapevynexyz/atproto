@@ -88,6 +88,7 @@ export interface TimelineItemSummary {
     | 'tools.ozone.moderation.defs#identityEvent'
     | 'tools.ozone.moderation.defs#recordEvent'
     | 'tools.ozone.moderation.defs#modEventPriorityScore'
+    | 'tools.ozone.moderation.defs#revokeAccountCredentialsEvent'
     | 'tools.ozone.moderation.defs#ageAssuranceEvent'
     | 'tools.ozone.moderation.defs#ageAssuranceOverrideEvent'
     | 'tools.ozone.moderation.defs#timelineEventPlcCreate'
@@ -97,6 +98,8 @@ export interface TimelineItemSummary {
     | 'tools.ozone.hosting.getAccountHistory#emailConfirmed'
     | 'tools.ozone.hosting.getAccountHistory#passwordUpdated'
     | 'tools.ozone.hosting.getAccountHistory#handleUpdated'
+    | 'tools.ozone.moderation.defs#scheduleTakedownEvent'
+    | 'tools.ozone.moderation.defs#cancelScheduledTakedownEvent'
     | (string & {})
   count: number
 }

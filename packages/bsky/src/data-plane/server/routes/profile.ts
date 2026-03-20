@@ -38,6 +38,9 @@ export default (db: Database): Partial<ServiceImpl<typeof Service>> => ({
     const notifDeclarationUris = dids.map(
       (did) => `at://${did}/app.bsky.notification.declaration/self`,
     )
+    const germDeclarationUris = dids.map(
+      (did) => `at://${did}/com.germnetwork.declaration/self`,
+    )
     const { ref } = db.db.dynamic
     const [
       handlesRes,
@@ -46,6 +49,7 @@ export default (db: Database): Partial<ServiceImpl<typeof Service>> => ({
       statuses,
       chatDeclarations,
       notifDeclarations,
+      germDeclarations,
     ] = await Promise.all([
       db.db
         .selectFrom('actor')
@@ -73,6 +77,7 @@ export default (db: Database): Partial<ServiceImpl<typeof Service>> => ({
       getRecords(db)({ uris: statusUris }),
       getRecords(db)({ uris: chatDeclarationUris }),
       getRecords(db)({ uris: notifDeclarationUris }),
+      getRecords(db)({ uris: germDeclarationUris }),
     ])
 
     const verificationsBySubjectDid = verificationsReceived.reduce(
@@ -94,6 +99,8 @@ export default (db: Database): Partial<ServiceImpl<typeof Service>> => ({
       const chatDeclaration = parseRecordBytes<ChatBskyActorDeclaration.Record>(
         chatDeclarations.records[i].record,
       )
+
+      const germDeclaration = germDeclarations.records[i]
 
       const verifications = verificationsBySubjectDid.get(did) ?? []
       const verifiedBy: VerifiedBy = verifications.reduce((acc, cur) => {
@@ -134,11 +141,24 @@ export default (db: Database): Partial<ServiceImpl<typeof Service>> => ({
           return undefined
         }
 
+        const status = row?.ageAssuranceStatus ?? 'unknown'
+        let access = row?.ageAssuranceAccess
+        if (!access || access === 'unknown') {
+          if (status === 'assured') {
+            access = 'full'
+          } else if (status === 'blocked') {
+            access = 'none'
+          } else {
+            access = 'unknown'
+          }
+        }
+
         return {
-          status: row?.ageAssuranceStatus ?? 'unknown',
           lastInitiatedAt: row?.ageAssuranceLastInitiatedAt
             ? Timestamp.fromDate(new Date(row?.ageAssuranceLastInitiatedAt))
             : undefined,
+          status,
+          access,
         }
       }
 
@@ -160,6 +180,7 @@ export default (db: Database): Partial<ServiceImpl<typeof Service>> => ({
         trustedVerifier: row?.trustedVerifier ?? false,
         verifiedBy,
         statusRecord: status,
+        germRecord: germDeclaration,
         tags: [],
         profileTags: [],
         allowActivitySubscriptionsFrom: activitySubscription(),

@@ -1,5 +1,49 @@
 # @atproto-labs/identity-resolver
 
+## 0.3.6
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @atproto-labs/did-resolver@0.2.6
+  - @atproto-labs/handle-resolver@0.3.6
+
+## 0.3.5
+
+### Patch Changes
+
+- [#4501](https://github.com/bluesky-social/atproto/pull/4501) [`2f78893`](https://github.com/bluesky-social/atproto/commit/2f78893ace3bbf14d4bac36837820ddb46658c98) Thanks [@matthieusieben](https://github.com/matthieusieben)! - Re-export types internally used by `IdentityInfo`
+
+- Updated dependencies []:
+  - @atproto-labs/did-resolver@0.2.5
+  - @atproto-labs/handle-resolver@0.3.5
+
+## 0.3.4
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @atproto-labs/did-resolver@0.2.4
+  - @atproto-labs/handle-resolver@0.3.4
+
+## 0.3.3
+
+### Patch Changes
+
+- [#4366](https://github.com/bluesky-social/atproto/pull/4366) [`261968fd6`](https://github.com/bluesky-social/atproto/commit/261968fd65014ded613e2bf085d61a7864b8fba7) Thanks [@matthieusieben](https://github.com/matthieusieben)! - Expose `createIdentityResolver` util
+
+- Updated dependencies [[`261968fd6`](https://github.com/bluesky-social/atproto/commit/261968fd65014ded613e2bf085d61a7864b8fba7), [`261968fd6`](https://github.com/bluesky-social/atproto/commit/261968fd65014ded613e2bf085d61a7864b8fba7)]:
+  - @atproto-labs/handle-resolver@0.3.3
+  - @atproto-labs/did-resolver@0.2.3
+
+## 0.3.2
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @atproto-labs/did-resolver@0.2.2
+  - @atproto-labs/handle-resolver@0.3.2
+
 ## 0.3.1
 
 ### Patch Changes

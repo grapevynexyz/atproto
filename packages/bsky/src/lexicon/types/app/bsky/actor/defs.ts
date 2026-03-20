@@ -26,6 +26,7 @@ export interface ProfileViewBasic {
   did: string
   handle: string
   displayName?: string
+  pronouns?: string
   avatar?: string
   associated?: ProfileAssociated
   viewer?: ViewerState
@@ -33,6 +34,8 @@ export interface ProfileViewBasic {
   createdAt?: string
   verification?: VerificationState
   status?: StatusView
+  /** Debug information for internal development */
+  debug?: { [_ in string]: unknown }
 }
 
 const hashProfileViewBasic = 'profileViewBasic'
@@ -50,6 +53,7 @@ export interface ProfileView {
   did: string
   handle: string
   displayName?: string
+  pronouns?: string
   description?: string
   avatar?: string
   associated?: ProfileAssociated
@@ -59,6 +63,8 @@ export interface ProfileView {
   labels?: ComAtprotoLabelDefs.Label[]
   verification?: VerificationState
   status?: StatusView
+  /** Debug information for internal development */
+  debug?: { [_ in string]: unknown }
 }
 
 const hashProfileView = 'profileView'
@@ -77,6 +83,8 @@ export interface ProfileViewDetailed {
   handle: string
   displayName?: string
   description?: string
+  pronouns?: string
+  website?: string
   avatar?: string
   banner?: string
   followersCount?: number
@@ -91,6 +99,8 @@ export interface ProfileViewDetailed {
   pinnedPost?: ComAtprotoRepoStrongRef.Main
   verification?: VerificationState
   status?: StatusView
+  /** Debug information for internal development */
+  debug?: { [_ in string]: unknown }
 }
 
 const hashProfileViewDetailed = 'profileViewDetailed'
@@ -111,6 +121,7 @@ export interface ProfileAssociated {
   labeler?: boolean
   chat?: ProfileAssociatedChat
   activitySubscription?: ProfileAssociatedActivitySubscription
+  germ?: ProfileAssociatedGerm
 }
 
 const hashProfileAssociated = 'profileAssociated'
@@ -136,6 +147,22 @@ export function isProfileAssociatedChat<V>(v: V) {
 
 export function validateProfileAssociatedChat<V>(v: V) {
   return validate<ProfileAssociatedChat & V>(v, id, hashProfileAssociatedChat)
+}
+
+export interface ProfileAssociatedGerm {
+  $type?: 'app.bsky.actor.defs#profileAssociatedGerm'
+  messageMeUrl: string
+  showButtonTo: 'usersIFollow' | 'everyone' | (string & {})
+}
+
+const hashProfileAssociatedGerm = 'profileAssociatedGerm'
+
+export function isProfileAssociatedGerm<V>(v: V) {
+  return is$typed(v, id, hashProfileAssociatedGerm)
+}
+
+export function validateProfileAssociatedGerm<V>(v: V) {
+  return validate<ProfileAssociatedGerm & V>(v, id, hashProfileAssociatedGerm)
 }
 
 export interface ProfileAssociatedActivitySubscription {
@@ -249,6 +276,7 @@ export type Preferences = (
   | $Typed<SavedFeedsPref>
   | $Typed<SavedFeedsPrefV2>
   | $Typed<PersonalDetailsPref>
+  | $Typed<DeclaredAgePref>
   | $Typed<FeedViewPref>
   | $Typed<ThreadViewPref>
   | $Typed<InterestsPref>
@@ -258,6 +286,7 @@ export type Preferences = (
   | $Typed<LabelersPref>
   | $Typed<PostInteractionSettingsPref>
   | $Typed<VerificationPrefs>
+  | $Typed<LiveEventPreferences>
   | { $type: string }
 )[]
 
@@ -360,6 +389,27 @@ export function validatePersonalDetailsPref<V>(v: V) {
   return validate<PersonalDetailsPref & V>(v, id, hashPersonalDetailsPref)
 }
 
+/** Read-only preference containing value(s) inferred from the user's declared birthdate. Absence of this preference object in the response indicates that the user has not made a declaration. */
+export interface DeclaredAgePref {
+  $type?: 'app.bsky.actor.defs#declaredAgePref'
+  /** Indicates if the user has declared that they are over 13 years of age. */
+  isOverAge13?: boolean
+  /** Indicates if the user has declared that they are over 16 years of age. */
+  isOverAge16?: boolean
+  /** Indicates if the user has declared that they are over 18 years of age. */
+  isOverAge18?: boolean
+}
+
+const hashDeclaredAgePref = 'declaredAgePref'
+
+export function isDeclaredAgePref<V>(v: V) {
+  return is$typed(v, id, hashDeclaredAgePref)
+}
+
+export function validateDeclaredAgePref<V>(v: V) {
+  return validate<DeclaredAgePref & V>(v, id, hashDeclaredAgePref)
+}
+
 export interface FeedViewPref {
   $type?: 'app.bsky.actor.defs#feedViewPref'
   /** The URI of the feed, or an identifier which describes the feed. */
@@ -396,8 +446,6 @@ export interface ThreadViewPref {
     | 'random'
     | 'hotness'
     | (string & {})
-  /** Show followed users at the top of all replies. */
-  prioritizeFollowedUsers?: boolean
 }
 
 const hashThreadViewPref = 'threadViewPref'
@@ -588,6 +636,25 @@ export function validateVerificationPrefs<V>(v: V) {
   return validate<VerificationPrefs & V>(v, id, hashVerificationPrefs)
 }
 
+/** Preferences for live events. */
+export interface LiveEventPreferences {
+  $type?: 'app.bsky.actor.defs#liveEventPreferences'
+  /** A list of feed IDs that the user has hidden from live events. */
+  hiddenFeedIds?: string[]
+  /** Whether to hide all feeds from live events. */
+  hideAllFeeds: boolean
+}
+
+const hashLiveEventPreferences = 'liveEventPreferences'
+
+export function isLiveEventPreferences<V>(v: V) {
+  return is$typed(v, id, hashLiveEventPreferences)
+}
+
+export function validateLiveEventPreferences<V>(v: V) {
+  return validate<LiveEventPreferences & V>(v, id, hashLiveEventPreferences)
+}
+
 /** Default post interaction settings for the account. These values should be applied as default values when creating new posts. These refs should mirror the threadgate and postgate records exactly. */
 export interface PostInteractionSettingsPref {
   $type?: 'app.bsky.actor.defs#postInteractionSettingsPref'
@@ -622,6 +689,8 @@ export function validatePostInteractionSettingsPref<V>(v: V) {
 
 export interface StatusView {
   $type?: 'app.bsky.actor.defs#statusView'
+  uri?: string
+  cid?: string
   /** The status for the account. */
   status: 'app.bsky.actor.status#live' | (string & {})
   record: { [_ in string]: unknown }
@@ -630,6 +699,8 @@ export interface StatusView {
   expiresAt?: string
   /** True if the status is not expired, false if it is expired. Only present if expiration was set. */
   isActive?: boolean
+  /** True if the user's go-live access has been disabled by a moderator, false otherwise. */
+  isDisabled?: boolean
 }
 
 const hashStatusView = 'statusView'

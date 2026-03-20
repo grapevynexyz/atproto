@@ -11,6 +11,8 @@ nsid      = authority delim name
 
 */
 
+export type NsidString = `${string}.${string}.${string}`
+
 export class NSID {
   readonly segments: readonly string[]
 
@@ -46,20 +48,22 @@ export class NSID {
     return this.segments
       .slice(0, this.segments.length - 1)
       .reverse()
-      .join('.')
+      .join('.') as `${string}.${string}`
   }
 
   get name() {
     return this.segments.at(this.segments.length - 1)
   }
 
-  toString() {
-    return this.segments.join('.')
+  toString(): NsidString {
+    return this.segments.join('.') as NsidString
   }
 }
 
-export function ensureValidNsid(nsid: string): void {
-  const result = validateNsid(nsid)
+export function ensureValidNsid<I extends string>(
+  input: I,
+): asserts input is I & NsidString {
+  const result = validateNsid(input)
   if (!result.success) throw new InvalidNsidError(result.message)
 }
 
@@ -69,10 +73,12 @@ export function parseNsid(nsid: string): string[] {
   return result.value
 }
 
-export function isValidNsid(nsid: string): boolean {
+export function isValidNsid<I extends string>(
+  input: I,
+): input is I & NsidString {
   // Since the regex version is more performant for valid NSIDs, we use it when
   // we don't care about error details.
-  return validateNsidRegex(nsid).success
+  return validateNsidRegex(input).success
 }
 
 type ValidateResult<T> =
@@ -142,7 +148,7 @@ export function validateNsid(input: string): ValidateResult<string[]> {
   }
 }
 
-function hasDisallowedCharacters(v) {
+function hasDisallowedCharacters(v: string) {
   return !/^[a-zA-Z0-9.-]*$/.test(v)
 }
 
@@ -173,7 +179,7 @@ function isValidIdentifier(v: string) {
  * {@link parseNsid}/{@link NSID.parse} if you need the parsed segments, or
  * {@link isValidNsid} if you just want a boolean.
  */
-export function ensureValidNsidRegex(nsid: string): void {
+export function ensureValidNsidRegex(nsid: string): asserts nsid is NsidString {
   const result = validateNsidRegex(nsid)
   if (!result.success) throw new InvalidNsidError(result.message)
 }
@@ -182,7 +188,7 @@ export function ensureValidNsidRegex(nsid: string): void {
  * Regexp based validation that behaves identically to the previous code but
  * provides less detailed error messages (while being 20% to 50% faster).
  */
-export function validateNsidRegex(value: string): ValidateResult<string> {
+export function validateNsidRegex(value: string): ValidateResult<NsidString> {
   if (value.length > 253 + 1 + 63) {
     return {
       success: false,
@@ -191,6 +197,8 @@ export function validateNsidRegex(value: string): ValidateResult<string> {
   }
 
   if (
+    // Fast check for small values
+    value.length < 5 ||
     !/^[a-zA-Z](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+(?:\.[a-zA-Z](?:[a-zA-Z0-9]{0,62})?)$/.test(
       value,
     )
@@ -203,7 +211,7 @@ export function validateNsidRegex(value: string): ValidateResult<string> {
 
   return {
     success: true,
-    value,
+    value: value as NsidString,
   }
 }
 

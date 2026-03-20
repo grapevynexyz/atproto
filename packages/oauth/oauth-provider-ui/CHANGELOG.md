@@ -1,5 +1,49 @@
 # @atproto/oauth-provider-ui
 
+## 0.4.3
+
+### Patch Changes
+
+- [#4619](https://github.com/bluesky-social/atproto/pull/4619) [`a2e4e95`](https://github.com/bluesky-social/atproto/commit/a2e4e9584730c1742aca7c1fcc59533a7c159740) Thanks [@matthieusieben](https://github.com/matthieusieben)! - Fix depencies version
+
+- [#4607](https://github.com/bluesky-social/atproto/pull/4607) [`19ecf5f`](https://github.com/bluesky-social/atproto/commit/19ecf5f76ae0d88c1963211a76920e00eecdd965) Thanks [@mozzius](https://github.com/mozzius)! - Fix avatar shape in OAuth UI
+
+- [#4606](https://github.com/bluesky-social/atproto/pull/4606) [`78fee14`](https://github.com/bluesky-social/atproto/commit/78fee144ff46ffc4585f318c72eea98e4357ba7b) Thanks [@matthieusieben](https://github.com/matthieusieben)! - Add console error logging upon client-side API request errors
+
+## 0.4.2
+
+## 0.4.1
+
+## 0.4.0
+
+### Minor Changes
+
+- [#4461](https://github.com/bluesky-social/atproto/pull/4461) [`5d8e7a6`](https://github.com/bluesky-social/atproto/commit/5d8e7a6588fc9e57e15d83d47bb45103205e3e41) Thanks [@ThisIsMissEm](https://github.com/ThisIsMissEm)! - Support selecting view based on prompt parameter
+
+## 0.3.6
+
+### Patch Changes
+
+- [#4382](https://github.com/bluesky-social/atproto/pull/4382) [`be8e6c1`](https://github.com/bluesky-social/atproto/commit/be8e6c1f25814202b98e2616a217599a6c46e0db) Thanks [@matthieusieben](https://github.com/matthieusieben)! - Add `toScopes()` utility on `IncludeScope`
+
+## 0.3.5
+
+## 0.3.4
+
+### Patch Changes
+
+- [#4301](https://github.com/bluesky-social/atproto/pull/4301) [`f496fa2c4`](https://github.com/bluesky-social/atproto/commit/f496fa2c4d9316229523454c691c75c269aba21e) Thanks [@matthieusieben](https://github.com/matthieusieben)! - Set dark background on authorization page's `<body>` in dark mode
+
+## 0.3.3
+
+## 0.3.2
+
+## 0.3.1
+
+### Patch Changes
+
+- [#4186](https://github.com/bluesky-social/atproto/pull/4186) [`d570db43d`](https://github.com/bluesky-social/atproto/commit/d570db43d6df2044dbaa5813cac469b3e73ba219) Thanks [@matthieusieben](https://github.com/matthieusieben)! - Add Japanese translation on OAuth Provider UI
+
 ## 0.3.0
 
 ### Minor Changes

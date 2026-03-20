@@ -8,7 +8,7 @@ import {
   mergeManyStates,
 } from '../../../../hydration/hydrator'
 import { Server } from '../../../../lexicon'
-import { QueryParams } from '../../../../lexicon/types/app/bsky/unspecced/getTrendingTopics'
+import { QueryParams } from '../../../../lexicon/types/app/bsky/unspecced/getSuggestedUsers'
 import {
   HydrationFnInput,
   PresentationFnInput,
@@ -30,18 +30,26 @@ export default function (server: Server, ctx: AppContext) {
     handler: async ({ auth, params, req }) => {
       const viewer = auth.credentials.iss
       const labelers = ctx.reqLabelers(req)
-      const hydrateCtx = await ctx.hydrator.createContext({ labelers, viewer })
+      const hydrateCtx = await ctx.hydrator.createContext({
+        labelers,
+        viewer,
+        features: ctx.featureGatesClient.scope(
+          ctx.featureGatesClient.parseUserContextFromHandler({
+            viewer,
+            req,
+          }),
+        ),
+      })
       const headers = noUndefinedVals({
         'accept-language': req.headers['accept-language'],
         'x-bsky-topics': Array.isArray(req.headers['x-bsky-topics'])
           ? req.headers['x-bsky-topics'].join(',')
           : req.headers['x-bsky-topics'],
       })
-      const { ...result } = await getSuggestedUsers(
+      const result = await getSuggestedUsers(
         {
           ...params,
-          viewer: viewer ?? undefined,
-          hydrateCtx: hydrateCtx.copy({ viewer }),
+          hydrateCtx,
           headers,
         },
         ctx,
@@ -54,25 +62,55 @@ export default function (server: Server, ctx: AppContext) {
   })
 }
 
-const skeleton = async (input: SkeletonFnInput<Context, Params>) => {
+// TODO: rename to `skeleton` once we can fully migrate to Discover
+const skeletonFromDiscover = async (
+  input: SkeletonFnInput<Context, Params>,
+) => {
   const { params, ctx } = input
-  if (ctx.topicsAgent) {
-    const res =
-      await ctx.topicsAgent.app.bsky.unspecced.getSuggestedUsersSkeleton(
-        {
-          limit: params.limit,
-          viewer: params.viewer,
-          category: params.category,
-        },
-        {
-          headers: params.headers,
-        },
-      )
+  if (!ctx.suggestionsAgent)
+    throw new InternalServerError('Suggestions agent not available')
 
-    return res.data
-  } else {
+  const res =
+    await ctx.suggestionsAgent.app.bsky.unspecced.getSuggestedUsersSkeleton(
+      {
+        limit: params.limit,
+        viewer: params.hydrateCtx.viewer ?? undefined,
+        category: params.category,
+      },
+      {
+        headers: params.headers,
+      },
+    )
+
+  return res.data
+}
+
+const skeletonFromTopics = async (input: SkeletonFnInput<Context, Params>) => {
+  const { params, ctx } = input
+  if (!ctx.topicsAgent)
     throw new InternalServerError('Topics agent not available')
-  }
+
+  const res =
+    await ctx.topicsAgent.app.bsky.unspecced.getSuggestedUsersSkeleton(
+      {
+        limit: params.limit,
+        viewer: params.hydrateCtx.viewer ?? undefined,
+        category: params.category,
+      },
+      {
+        headers: params.headers,
+      },
+    )
+
+  return res.data
+}
+
+const skeleton = async (input: SkeletonFnInput<Context, Params>) => {
+  const useDiscover = input.params.hydrateCtx.features.checkGate(
+    input.params.hydrateCtx.features.Gate.SuggestedUsersDiscoverEnable,
+  )
+  const skeletonFn = useDiscover ? skeletonFromDiscover : skeletonFromTopics
+  return skeletonFn(input)
 }
 
 const hydration = async (
@@ -81,8 +119,9 @@ const hydration = async (
   const { ctx, params, skeleton } = input
   const dids = dedupeStrs(skeleton.dids)
   const pairs: Map<string, string[]> = new Map()
-  if (params.viewer) {
-    pairs.set(params.viewer, dids)
+  const viewer = params.hydrateCtx.viewer
+  if (viewer) {
+    pairs.set(viewer, dids)
   }
   const [profilesState, bidirectionalBlocks] = await Promise.all([
     ctx.hydrator.hydrateProfiles(dids, params.hydrateCtx),
@@ -96,10 +135,11 @@ const noBlocksOrFollows = (
   input: RulesFnInput<Context, Params, SkeletonState>,
 ) => {
   const { ctx, skeleton, params, hydration } = input
-  if (!params.viewer) {
+  const viewer = params.hydrateCtx.viewer
+  if (!viewer) {
     return skeleton
   }
-  const blocks = hydration.bidirectionalBlocks?.get(params.viewer)
+  const blocks = hydration.bidirectionalBlocks?.get(viewer)
   return {
     ...skeleton,
     dids: skeleton.dids.filter((did) => {
@@ -114,6 +154,8 @@ const presentation = (
 ) => {
   const { ctx, skeleton, hydration } = input
   return {
+    recId: skeleton.recId,
+    recIdStr: skeleton.recIdStr,
     actors: mapDefined(skeleton.dids, (did) =>
       ctx.views.profile(did, hydration),
     ),
@@ -124,6 +166,7 @@ type Context = {
   hydrator: Hydrator
   views: Views
   topicsAgent: AtpAgent | undefined
+  suggestionsAgent: AtpAgent | undefined
 }
 
 type Params = QueryParams & {
@@ -134,4 +177,6 @@ type Params = QueryParams & {
 
 type SkeletonState = {
   dids: string[]
+  recId?: string
+  recIdStr?: string
 }

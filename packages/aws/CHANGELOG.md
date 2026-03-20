@@ -1,5 +1,40 @@
 # @atproto/aws
 
+## 0.2.31
+
+### Patch Changes
+
+- Updated dependencies [[`261968fd6`](https://github.com/bluesky-social/atproto/commit/261968fd65014ded613e2bf085d61a7864b8fba7), [`261968fd6`](https://github.com/bluesky-social/atproto/commit/261968fd65014ded613e2bf085d61a7864b8fba7), [`261968fd6`](https://github.com/bluesky-social/atproto/commit/261968fd65014ded613e2bf085d61a7864b8fba7), [`261968fd6`](https://github.com/bluesky-social/atproto/commit/261968fd65014ded613e2bf085d61a7864b8fba7), [`261968fd6`](https://github.com/bluesky-social/atproto/commit/261968fd65014ded613e2bf085d61a7864b8fba7)]:
+  - @atproto/common-web@0.4.4
+  - @atproto/common@0.5.0
+  - @atproto/repo@0.8.11
+  - @atproto/crypto@0.4.4
+
+## 0.2.30
+
+### Patch Changes
+
+- Updated dependencies [[`8dd77bad2`](https://github.com/bluesky-social/atproto/commit/8dd77bad2fdee20e39d3787198d960c19d8df3d0)]:
+  - @atproto/repo@0.8.10
+
+## 0.2.29
+
+### Patch Changes
+
+- [#4169](https://github.com/bluesky-social/atproto/pull/4169) [`055a413fb`](https://github.com/bluesky-social/atproto/commit/055a413fba4fab510ec899377154f1204ab12099) Thanks [@matthieusieben](https://github.com/matthieusieben)! - Optimistically attempt to move files before checking for their existence, resulting in faster `makePermanent` calls
+
+- [#4169](https://github.com/bluesky-social/atproto/pull/4169) [`055a413fb`](https://github.com/bluesky-social/atproto/commit/055a413fba4fab510ec899377154f1204ab12099) Thanks [@matthieusieben](https://github.com/matthieusieben)! - `S3BlobStore`'s `deleteMany` now supports any number of input (and will process deletes by chunks internally)
+
+- [#4169](https://github.com/bluesky-social/atproto/pull/4169) [`055a413fb`](https://github.com/bluesky-social/atproto/commit/055a413fba4fab510ec899377154f1204ab12099) Thanks [@matthieusieben](https://github.com/matthieusieben)! - Update `@aws-sdk` dependencies
+
+- [#4169](https://github.com/bluesky-social/atproto/pull/4169) [`055a413fb`](https://github.com/bluesky-social/atproto/commit/055a413fba4fab510ec899377154f1204ab12099) Thanks [@matthieusieben](https://github.com/matthieusieben)! - Set a timeout (of 10 seconds by default) on every `S3BlobStore` requests
+
+- Updated dependencies [[`055a413fb`](https://github.com/bluesky-social/atproto/commit/055a413fba4fab510ec899377154f1204ab12099), [`055a413fb`](https://github.com/bluesky-social/atproto/commit/055a413fba4fab510ec899377154f1204ab12099), [`055a413fb`](https://github.com/bluesky-social/atproto/commit/055a413fba4fab510ec899377154f1204ab12099)]:
+  - @atproto/repo@0.8.9
+  - @atproto/common-web@0.4.3
+  - @atproto/common@0.4.12
+  - @atproto/crypto@0.4.4
+
 ## 0.2.28
 
 ### Patch Changes

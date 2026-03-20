@@ -1,5 +1,5 @@
 import { isAtprotoDid } from '@atproto/did'
-import { LexiconResolutionError } from '@atproto/lexicon-resolver'
+import { LexResolverError } from '@atproto/lex-resolver'
 import type { Account } from '@atproto/oauth-provider-api'
 import { isAtprotoOauthScope } from '@atproto/oauth-scopes'
 import {
@@ -26,7 +26,6 @@ import { InvalidRequestError } from '../errors/invalid-request-error.js'
 import { InvalidScopeError } from '../errors/invalid-scope-error.js'
 import { LexiconManager } from '../lexicon/lexicon-manager.js'
 import { RequestMetadata } from '../lib/http/request.js'
-import { callAsync } from '../lib/util/function.js'
 import { OAuthHooks } from '../oauth-hooks.js'
 import { Signer } from '../signer/signer.js'
 import { Code, generateCode } from './code.js'
@@ -64,7 +63,7 @@ export class RequestManager {
   ) {
     const parameters = await this.validate(client, clientAuth, input)
 
-    await callAsync(this.hooks.onAuthorizationRequest, {
+    await this.hooks.onAuthorizationRequest?.call(null, {
       client,
       clientAuth,
       parameters,
@@ -271,8 +270,11 @@ export class RequestManager {
         )
       }
 
-      // force "consent" for unauthenticated, third party clients
-      parameters = { ...parameters, prompt: 'consent' }
+      // force "consent" for unauthenticated third party clients, unless they
+      // are trying to create accounts:
+      if (parameters.prompt !== 'create') {
+        parameters = { ...parameters, prompt: 'consent' }
+      }
     }
 
     // atproto extension: ensure that the login_hint is a valid handle or DID
@@ -297,7 +299,7 @@ export class RequestManager {
         await this.lexiconManager.getPermissionSetsFromScope(parameters.scope)
       } catch (err) {
         // Parse expected errors
-        if (err instanceof LexiconResolutionError) {
+        if (err instanceof LexResolverError) {
           throw new AuthorizationError(
             parameters,
             err.message,
@@ -314,7 +316,7 @@ export class RequestManager {
     return parameters
   }
 
-  async get(requestUri: RequestUri, deviceId: DeviceId, clientId?: ClientId) {
+  async get(requestUri: RequestUri, deviceId?: DeviceId, clientId?: ClientId) {
     const requestId = decodeRequestUri(requestUri)
 
     const data = await this.store.readRequest(requestId)
@@ -347,13 +349,15 @@ export class RequestManager {
         )
       }
 
-      if (!data.deviceId) {
-        updates.deviceId = deviceId
-      } else if (data.deviceId !== deviceId) {
-        throw new AccessDeniedError(
-          data.parameters,
-          'This request was initiated from another device',
-        )
+      if (deviceId != null) {
+        if (!data.deviceId) {
+          updates.deviceId = deviceId
+        } else if (data.deviceId !== deviceId) {
+          throw new AccessDeniedError(
+            data.parameters,
+            'This request was initiated from another device',
+          )
+        }
       }
     } catch (err) {
       await this.store.deleteRequest(requestId)
@@ -444,7 +448,7 @@ export class RequestManager {
         parameters,
       })
 
-      await callAsync(this.hooks.onAuthorized, {
+      await this.hooks.onAuthorized?.call(null, {
         client,
         account,
         parameters,

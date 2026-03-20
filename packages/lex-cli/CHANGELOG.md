@@ -1,5 +1,40 @@
 # @atproto/lex-cli
 
+## 0.9.9
+
+### Patch Changes
+
+- Updated dependencies [[`f7c2610`](https://github.com/bluesky-social/atproto/commit/f7c26103a6d4e24e5bedbb6fd908be140420e0dd), [`f7c2610`](https://github.com/bluesky-social/atproto/commit/f7c26103a6d4e24e5bedbb6fd908be140420e0dd), [`f7c2610`](https://github.com/bluesky-social/atproto/commit/f7c26103a6d4e24e5bedbb6fd908be140420e0dd), [`f7c2610`](https://github.com/bluesky-social/atproto/commit/f7c26103a6d4e24e5bedbb6fd908be140420e0dd), [`f7c2610`](https://github.com/bluesky-social/atproto/commit/f7c26103a6d4e24e5bedbb6fd908be140420e0dd), [`52834ab`](https://github.com/bluesky-social/atproto/commit/52834aba182da8df3611fd9dff924e6c6a3973a7), [`f7c2610`](https://github.com/bluesky-social/atproto/commit/f7c26103a6d4e24e5bedbb6fd908be140420e0dd)]:
+  - @atproto/syntax@0.5.0
+  - @atproto/lexicon@0.6.2
+
+## 0.9.8
+
+### Patch Changes
+
+- Updated dependencies [[`d551b0e`](https://github.com/bluesky-social/atproto/commit/d551b0e3527714c111c3ec6e4c90ad7f46369fab)]:
+  - @atproto/lexicon@0.6.0
+
+## 0.9.7
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @atproto/lexicon@0.5.2
+
+## 0.9.6
+
+### Patch Changes
+
+- [#4294](https://github.com/bluesky-social/atproto/pull/4294) [`ac1d29ec0`](https://github.com/bluesky-social/atproto/commit/ac1d29ec0f105b4579491f563e2abd73f36c1df3) Thanks [@matthieusieben](https://github.com/matthieusieben)! - Export record types using the `Main` identifier
+
+## 0.9.5
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @atproto/lexicon@0.5.1
+
 ## 0.9.4
 
 ### Patch Changes

@@ -1,5 +1,50 @@
 # @atproto/repo
 
+## 0.8.13
+
+### Patch Changes
+
+- [#4729](https://github.com/bluesky-social/atproto/pull/4729) [`192685f`](https://github.com/bluesky-social/atproto/commit/192685fca75a68c9c50a94817d3f27da7fc02f56) Thanks [@matthieusieben](https://github.com/matthieusieben)! - Optimize BufferedReader implementation
+
+## 0.8.12
+
+### Patch Changes
+
+- Updated dependencies [[`d551b0e`](https://github.com/bluesky-social/atproto/commit/d551b0e3527714c111c3ec6e4c90ad7f46369fab), [`693784c`](https://github.com/bluesky-social/atproto/commit/693784c3a0dee4b6a29aa1e018fce682dcae148f)]:
+  - @atproto/lexicon@0.6.0
+  - @atproto/common-web@0.4.7
+  - @atproto/common@0.5.3
+
+## 0.8.11
+
+### Patch Changes
+
+- Updated dependencies [[`261968fd6`](https://github.com/bluesky-social/atproto/commit/261968fd65014ded613e2bf085d61a7864b8fba7), [`261968fd6`](https://github.com/bluesky-social/atproto/commit/261968fd65014ded613e2bf085d61a7864b8fba7), [`261968fd6`](https://github.com/bluesky-social/atproto/commit/261968fd65014ded613e2bf085d61a7864b8fba7), [`261968fd6`](https://github.com/bluesky-social/atproto/commit/261968fd65014ded613e2bf085d61a7864b8fba7), [`261968fd6`](https://github.com/bluesky-social/atproto/commit/261968fd65014ded613e2bf085d61a7864b8fba7)]:
+  - @atproto/common-web@0.4.4
+  - @atproto/common@0.5.0
+  - @atproto/lexicon@0.5.2
+  - @atproto/crypto@0.4.4
+
+## 0.8.10
+
+### Patch Changes
+
+- [#4223](https://github.com/bluesky-social/atproto/pull/4223) [`8dd77bad2`](https://github.com/bluesky-social/atproto/commit/8dd77bad2fdee20e39d3787198d960c19d8df3d0) Thanks [@dholms](https://github.com/dholms)! - Ensure that reading CAR files is actually done asynchronously
+
+## 0.8.9
+
+### Patch Changes
+
+- [#4169](https://github.com/bluesky-social/atproto/pull/4169) [`055a413fb`](https://github.com/bluesky-social/atproto/commit/055a413fba4fab510ec899377154f1204ab12099) Thanks [@matthieusieben](https://github.com/matthieusieben)! - Add iterator support to the `BlockMap` class
+
+- [#4169](https://github.com/bluesky-social/atproto/pull/4169) [`055a413fb`](https://github.com/bluesky-social/atproto/commit/055a413fba4fab510ec899377154f1204ab12099) Thanks [@matthieusieben](https://github.com/matthieusieben)! - Small performance improvement
+
+- Updated dependencies [[`055a413fb`](https://github.com/bluesky-social/atproto/commit/055a413fba4fab510ec899377154f1204ab12099)]:
+  - @atproto/common-web@0.4.3
+  - @atproto/common@0.4.12
+  - @atproto/lexicon@0.5.1
+  - @atproto/crypto@0.4.4
+
 ## 0.8.8
 
 ### Patch Changes

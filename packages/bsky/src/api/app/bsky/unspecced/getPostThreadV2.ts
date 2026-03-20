@@ -33,6 +33,12 @@ export default function (server: Server, ctx: AppContext) {
         viewer,
         includeTakedowns,
         include3pBlocks,
+        features: ctx.featureGatesClient.scope(
+          ctx.featureGatesClient.parseUserContextFromHandler({
+            viewer,
+            req,
+          }),
+        ),
       })
 
       return {
@@ -89,7 +95,6 @@ const presentation = (
     above: calculateAbove(ctx, params),
     below: calculateBelow(ctx, skeleton.anchor, params),
     branchingFactor: params.branchingFactor,
-    prioritizeFollowedUsers: params.prioritizeFollowedUsers,
     sort: params.sort,
   })
 

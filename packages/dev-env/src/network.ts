@@ -67,12 +67,17 @@ export class TestNetwork extends TestNetworkNoAppView {
       port: bskyPort,
       plcUrl: plc.url,
       pdsPort,
+      rolodexUrl: process.env.BSKY_ROLODEX_URL,
+      rolodexIgnoreBadTls: true,
       repoProvider: `ws://localhost:${pdsPort}`,
       dbPostgresSchema: `appview_${dbPostgresSchema}`,
       dbPostgresUrl,
       redisHost,
       modServiceDid: ozoneServiceProfile.did,
       labelsFromIssuerDids: [ozoneServiceProfile.did, EXAMPLE_LABELER],
+      // Using a static private key results in a static DID, which is useful for e2e tests with the social-app repo.
+      privateKey:
+        '3f916c70dc69e4c5e83877f013325b11ecac31742e6a42f5c4fb240d0703d9d5=',
       ...params.bsky,
     })
 
@@ -86,6 +91,9 @@ export class TestNetwork extends TestNetworkNoAppView {
       lexiconDidAuthority: lexiconAuthorityProfile.did,
       ...params.pds,
     })
+
+    // mock before any events start flowing from pds so that we don't miss e.g. any handle resolutions.
+    mockNetworkUtilities(pds, bsky)
 
     const ozone = await TestOzone.create({
       port: ozonePort,
@@ -112,8 +120,8 @@ export class TestNetwork extends TestNetworkNoAppView {
     await lexiconAuthorityProfile.createRecords()
 
     await ozone.addAdminDid(ozoneServiceProfile.did)
+    await ozone.createPolicies()
 
-    mockNetworkUtilities(pds, bsky)
     await thirdPartyPds.processAll()
     await pds.processAll()
     await ozone.processAll()
