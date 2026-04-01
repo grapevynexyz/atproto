@@ -1,16 +1,25 @@
 import { Timestamp } from '@bufbuild/protobuf'
-import { CID } from 'multiformats/cid'
-import * as ui8 from 'uint8arrays'
-import { jsonToLex } from '@atproto/lexicon'
+import {
+  AtUriString,
+  Cid,
+  Infer,
+  LexParseOptions,
+  LexValue,
+  RecordSchema,
+  Schema,
+  TypedLexMap,
+  ValidateOptions,
+  lexParse,
+  parseCidSafe,
+} from '@atproto/lex'
 import { AtUri } from '@atproto/syntax'
-import { lexicons } from '../lexicon/lexicons'
-import { Record } from '../proto/bsky_pb'
+import { Record as RecordEntry } from '../proto/bsky_pb'
 
-export class HydrationMap<T> extends Map<string, T | null> implements Merges {
-  merge(map: HydrationMap<T>): this {
-    map.forEach((val, key) => {
+export class HydrationMap<K, T> extends Map<K, T | null> implements Merges {
+  merge(map: HydrationMap<K, T>): this {
+    for (const [key, val] of map) {
       this.set(key, val)
-    })
+    }
     return this
   }
 }
@@ -19,29 +28,27 @@ export interface Merges {
   merge<T extends this>(map: T): this
 }
 
-type UnknownRecord = { $type: string; [x: string]: unknown }
-
-export type RecordInfo<T extends UnknownRecord> = {
-  record: T
+export type RecordInfo<T extends { $type: string }> = {
+  record: T & TypedLexMap
   cid: string
   sortedAt: Date
   indexedAt: Date
   takedownRef: string | undefined
 }
 
-export const mergeMaps = <V, M extends HydrationMap<V>>(
-  mapA?: M,
-  mapB?: M,
-): M | undefined => {
+export const mergeMaps = <V extends HydrationMap<any, any>>(
+  mapA?: V,
+  mapB?: V,
+): V | undefined => {
   if (!mapA) return mapB
   if (!mapB) return mapA
   return mapA.merge(mapB)
 }
 
-export const mergeNestedMaps = <V, M extends HydrationMap<HydrationMap<V>>>(
-  mapA?: M,
-  mapB?: M,
-): M | undefined => {
+export const mergeNestedMaps = <K, V extends HydrationMap<any, any>>(
+  mapA?: HydrationMap<K, V>,
+  mapB?: HydrationMap<K, V>,
+): HydrationMap<K, V> | undefined => {
   if (!mapA) return mapB
   if (!mapB) return mapA
 
@@ -53,73 +60,66 @@ export const mergeNestedMaps = <V, M extends HydrationMap<HydrationMap<V>>>(
   return mapA
 }
 
-export const mergeManyMaps = <T>(...maps: HydrationMap<T>[]) => {
-  return maps.reduce(mergeMaps, undefined as HydrationMap<T> | undefined)
+export const mergeManyMaps = <K, T>(...maps: HydrationMap<K, T>[]) => {
+  return maps.reduce(mergeMaps, undefined as HydrationMap<K, T> | undefined)
 }
 
-export type ItemRef = { uri: string; cid?: string }
+export type ItemRef = { uri: AtUriString; cid?: string }
 
-export const parseRecord = <T extends UnknownRecord>(
-  entry: Record,
+export function parseRecord<TSchema extends RecordSchema>(
+  recordSchema: TSchema,
+  recordEntry: RecordEntry,
   includeTakedowns: boolean,
-): RecordInfo<T> | undefined => {
-  if (!includeTakedowns && entry.takenDown) {
+): RecordInfo<Infer<TSchema>> | undefined {
+  if (!includeTakedowns && recordEntry.takenDown) {
     return undefined
   }
-  const record = parseRecordBytes<T>(entry.record)
-  const cid = entry.cid
-  const sortedAt = parseDate(entry.sortedAt) ?? new Date(0)
-  const indexedAt = parseDate(entry.indexedAt) ?? new Date(0)
-  if (!record || !cid) return
-  if (!isValidRecord(record)) {
+
+  const cid = recordEntry.cid
+  if (!cid) return
+
+  const record = parseJsonBytes(recordSchema, recordEntry.record)
+  if (!record) {
     return
   }
+
   return {
     record,
     cid,
-    sortedAt,
-    indexedAt,
-    takedownRef: safeTakedownRef(entry),
+    sortedAt: parseDate(recordEntry.sortedAt) ?? new Date(0),
+    indexedAt: parseDate(recordEntry.indexedAt) ?? new Date(0),
+    takedownRef: safeTakedownRef(recordEntry),
   }
 }
 
-const isValidRecord = (json: unknown) => {
-  const lexRecord = jsonToLex(json)
-  if (typeof lexRecord?.['$type'] !== 'string') {
-    return false
-  }
-  try {
-    lexicons.assertValidRecord(lexRecord['$type'], lexRecord)
-    return true
-  } catch {
-    return false
-  }
-}
-
-// @NOTE not parsed into lex format, so will not match lexicon record types on CID and blob values.
-export const parseRecordBytes = <T>(
+export const parseJsonBytes = <TSchema extends Schema<LexValue>>(
+  schema: TSchema,
   bytes: Uint8Array | undefined,
+  options: LexParseOptions & ValidateOptions = { strict: false },
+): Infer<TSchema> | undefined => {
+  if (!bytes || bytes.byteLength === 0) return undefined
+
+  // @NOTE Buffer.from(bytes) creates a copy of the ArrayBuffer
+  const jsonBuffer = Buffer.from(
+    bytes.buffer,
+    bytes.byteOffset,
+    bytes.byteLength,
+  )
+  const jsonString = jsonBuffer.toString('utf8')
+
+  const value = lexParse(jsonString, options)
+  return schema.ifMatches(value, options)
+}
+
+export const parseString = <T extends string | undefined>(
+  str: undefined | string,
 ): T | undefined => {
-  return parseJsonBytes(bytes) as T
+  return str ? (str as T) : undefined
 }
 
-export const parseJsonBytes = (bytes: Uint8Array | undefined): unknown => {
-  if (!bytes || bytes.byteLength === 0) return
-  const parsed = JSON.parse(ui8.toString(bytes, 'utf8'))
-  return parsed ?? undefined
-}
-
-export const parseString = (str: string | undefined): string | undefined => {
-  return str && str.length > 0 ? str : undefined
-}
-
-export const parseCid = (cidStr: string | undefined): CID | undefined => {
-  if (!cidStr || cidStr.length === 0) return
-  try {
-    return CID.parse(cidStr)
-  } catch {
-    return
-  }
+export const parseCid = (cidStr: string | undefined): Cid | null => {
+  if (!cidStr) return null
+  return parseCidSafe(cidStr)
 }
 
 export const parseDate = (
@@ -133,8 +133,10 @@ export const parseDate = (
   return date
 }
 
-export const urisByCollection = (uris: string[]): Map<string, string[]> => {
-  const result = new Map<string, string[]>()
+export const urisByCollection = <T extends string>(
+  uris: Iterable<T>,
+): Map<string, T[]> => {
+  const result = new Map<string, T[]>()
   for (const uri of uris) {
     const collection = new AtUri(uri).collection
     const items = result.get(collection) ?? []

@@ -13,8 +13,7 @@ import {
   XrpcAuthenticationError,
   XrpcInvalidResponseError,
   XrpcResponseError,
-  XrpcUpstreamError,
-  isXrpcErrorPayload,
+  XrpcResponseValidationError,
 } from './errors.js'
 import {
   EncodingString,
@@ -58,7 +57,7 @@ export type XrpcResponseBody<M extends Procedure | Query> =
   M['output'] extends Payload<infer TEncoding, infer TSchema>
     ? TEncoding extends string
       ? InferBodyType<TEncoding, TSchema>
-      : undefined
+      : undefined | LexValue | Uint8Array
     : never
 
 /**
@@ -75,7 +74,9 @@ export type XrpcResponsePayload<M extends Procedure | Query> =
           encoding: InferEncodingType<TEncoding>
           body: InferBodyType<TEncoding, TSchema>
         }
-      : undefined
+      : // If the schema does not specify an output encoding, anything could be
+        // returned, including no payload at all (undefined).
+        undefined | { body: LexValue | Uint8Array; encoding: string }
     : never
 
 export type XrpcResponseOptions = {
@@ -170,7 +171,7 @@ export class XrpcResponse<M extends Procedure | Query>
    * {@link XrpcResponseError.matchesSchemaErrors} to narrow the error type based on
    * the method's declared error schema. This can be narrowed further as a
    * {@link XrpcAuthenticationError} if the error is an authentication error.
-   * @throws {XrpcUpstreamError} when the response is not a valid XRPC
+   * @throws {XrpcInvalidResponseError} when the response is not a valid XRPC
    * response, or if the response does not conform to the method's schema.
    */
   static async fromFetchResponse<const M extends Procedure | Query>(
@@ -182,63 +183,62 @@ export class XrpcResponse<M extends Procedure | Query>
     // Since nothing should cause an exception before "readPayload" is
     // called, we can safely not use a try/finally here.
 
-    // @NOTE redirect is set to 'follow', so we shouldn't get 3xx responses here
-    if (response.status < 200 || response.status >= 300) {
-      // Always parse json for error responses
+    // Always turn 4xx/5xx responses into XrpcResponseError
+    if (response.status >= 400) {
       const payload = await readPayload(method, response, {
-        parse: { strict: options?.strictResponseProcessing ?? true },
+        // Always parse errors in non-strict mode
+        parse: { strict: false },
       })
 
-      // Properly formatted XRPC error response ?
-      if (response.status >= 400 && isXrpcErrorPayload(payload)) {
-        throw response.status === 401
-          ? new XrpcAuthenticationError<M>(method, response, payload)
-          : new XrpcResponseError<M>(method, response, payload)
+      if (response.status === 401) {
+        throw new XrpcAuthenticationError<M>(method, response, payload)
       }
 
-      // Invalid XRPC response (we probably did not hit an XRPC implementation)
-      throw new XrpcUpstreamError(
+      throw new XrpcResponseError<M>(method, response, payload)
+    }
+
+    // @NOTE redirect is set to 'follow', so we shouldn't get 3xx responses here
+    if (response.status < 200 || response.status >= 300) {
+      await response.body?.cancel()
+
+      throw new XrpcInvalidResponseError(
         method,
         response,
-        payload,
-        response.status >= 500
-          ? 'Upstream server encountered an error'
-          : response.status >= 400
-            ? 'Invalid response payload'
-            : 'Invalid response status code',
+        undefined,
+        `Unexpected status code ${response.status}`,
       )
     }
 
     const payload = await readPayload(method, response, {
-      // Only parse json if the schema expects it
-      parse: method.output.encoding === CONTENT_TYPE_JSON && {
-        strict: options?.strictResponseProcessing ?? true,
-      },
+      // Parse response if there is a schema, or if the encoding is
+      // "application/json"
+      parse:
+        method.output.schema || method.output.encoding === CONTENT_TYPE_JSON
+          ? { strict: options?.strictResponseProcessing ?? true }
+          : // If there is no declared output encoding, we'll parse the output (in loose mode)
+            method.output.encoding == null
+            ? { strict: false }
+            : false,
     })
 
+    if (!method.output.matchesEncoding(payload?.encoding)) {
+      throw new XrpcInvalidResponseError(
+        method,
+        response,
+        payload,
+        `Expected ${stringifyEncoding(method.output.encoding)} response (got ${stringifyEncoding(payload?.encoding)})`,
+      )
+    }
+
     // Response is successful (2xx). Validate payload (data and encoding) against schema.
-    if (method.output.encoding == null) {
-      // Schema expects no payload
-      if (payload) {
-        throw new XrpcUpstreamError(
-          method,
-          response,
-          payload,
-          `Expected response with no body, got ${payload.encoding}`,
-        )
-      }
-    } else {
-      // Schema expects a payload
-      if (!payload || !method.output.matchesEncoding(payload.encoding)) {
-        throw new XrpcUpstreamError(
-          method,
-          response,
-          payload,
-          payload
-            ? `Expected ${method.output.encoding} response, got ${payload.encoding}`
-            : `Expected non-empty response with content-type ${method.output.encoding}`,
-        )
-      }
+    if (method.output.encoding != null) {
+      // If the schema specifies an output, verify that the response properly
+      // matches the expected format (encoding and schema, if present). If no
+      // output is specified, any payload could be returned.
+
+      // Needed for type safety. Should never happen since matchesEncoding()
+      // should return not succeed if there is a schema encoding but no payload.
+      if (!payload) throw new Error('Expected payload')
 
       // Assert valid response body.
       if (method.output.schema && options?.validateResponse !== false) {
@@ -247,7 +247,7 @@ export class XrpcResponse<M extends Procedure | Query>
         })
 
         if (!result.success) {
-          throw new XrpcInvalidResponseError(
+          throw new XrpcResponseValidationError(
             method,
             response,
             payload,
@@ -343,12 +343,16 @@ async function readPayload(
   } catch (cause) {
     const message = 'Unable to parse response payload'
     const messageDetail = cause instanceof TypeError ? cause.message : undefined
-    throw new XrpcUpstreamError(
+    throw new XrpcInvalidResponseError(
       method,
       response,
-      null,
+      undefined,
       messageDetail ? `${message}: ${messageDetail}` : message,
       { cause },
     )
   }
+}
+
+function stringifyEncoding(encoding: string | undefined) {
+  return encoding ? `"${encoding}"` : 'no payload'
 }
